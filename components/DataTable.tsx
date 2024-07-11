@@ -4,7 +4,7 @@ import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
+    getPaginationRowModel, SortingState,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -21,6 +21,7 @@ import {FinancialProduct, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
 import {useEffect, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {ArrowDown, ArrowUp} from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -30,11 +31,17 @@ interface DataTableProps<TData, TValue> {
 const columns: ColumnDef<FinancialProduct>[] = [
     {
         accessorKey: "financialCompany.companyName",
-        header: "회사명"
+        header: "회사명",
+        enableSorting: true,
+        enableMultiSort: true,
+        id: "companyName",
     },
     {
         accessorKey: "financialProductName",
-        header: "상품명"
+        header: "상품명",
+        enableSorting: true,
+        enableMultiSort: true,
+        id: "financialProductName",
     },
     // {
     //     accessorKey: "financialProductOptions[0].baseInterestRate",
@@ -43,13 +50,30 @@ const columns: ColumnDef<FinancialProduct>[] = [
     {
         accessorKey: "financialProductOptions",
         header: "최고 우대 이율",
-        cell: FinancialProductCell
+        cell: FinancialProductCell,
+        id: "maximumInterestRate"
     },
 ];
 
 async function getFinancials(searchParams: SearchParams) {
     // URLSearchParams 객체를 사용하여 쿼리 파라미터 생성
-    const queryString = new URLSearchParams(searchParams).toString();
+    // `searchParams`에서 `sort` 배열을 처리하여 올바른 쿼리 파라미터 생성
+    const params = new URLSearchParams();
+
+    // `searchParams`에서 각 쿼리 파라미터를 `URLSearchParams` 객체로 추가
+    Object.entries(searchParams).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+            // 배열인 경우, 각각의 값을 `params`에 추가
+            value.forEach(val => params.append(key, val));
+        } else {
+            // 단일 값인 경우
+            params.set(key, value);
+        }
+    });
+
+    // 쿼리 문자열 생성
+    const queryString = params.toString();
+    console.log(queryString)
     const res = await fetch(`http://localhost:8080/v1/financials?${queryString}`, {
         method: "GET",
         headers: {
@@ -79,6 +103,7 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
         pageIndex: Number(searchParams.page || '0'),
         pageSize: 20, //default page size
     });
+    const [sorting, setSorting] = useState<SortingState>([{id: "companyName", desc: true}]);
 
 
     useEffect(() => {
@@ -101,7 +126,7 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
     const table = useReactTable({
         data,
         columns,
-        state: {pagination},
+        state: {pagination, sorting},
         onPaginationChange: (updater) => {
             // make sure updater is callable (to avoid typescript warning)
             if (typeof updater !== "function") return;
@@ -112,11 +137,35 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
             params.set('size', newPageInfo.pageSize.toString())
             replace(`${pathname}?${params.toString()}`)
         },
+        onSortingChange: (updater) => {
+            // Update the sorting state
+            const newSortingInfo = updater instanceof Function ? updater(table.getState().sorting) : updater;
+            setSorting(newSortingInfo);
+
+            // Create a new URLSearchParams object from existing searchParams
+            const params = new URLSearchParams(searchParams);
+
+            // Clear existing 'sort' parameters
+            params.delete('sort');
+
+            // Append new sort parameters
+            newSortingInfo.forEach(sort => {
+                params.append('sort', `${sort.id},${sort.desc ? 'desc' : 'asc'}`);
+            });
+
+            // Construct the new URL with updated query parameters
+            const newUrl = `${pathname}?${params.toString()}`;
+
+            // Update the URL
+            replace(newUrl);
+        },
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
+        manualSorting: true,
         pageCount: pageCount,
         autoResetPageIndex: false,
+        enableMultiSort: true,
     })
 
     function handlePreviousButton() {
@@ -152,13 +201,26 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
+                                        <TableHead key={header.id} colSpan={header.colSpan}>
+                                            {header.isPlaceholder ? null : (
+                                                <div
+                                                    {...{
+                                                        className: header.column.getCanSort()
+                                                            ? 'select-none cursor-pointer flex items-center gap-1'
+                                                            : '',
+                                                        onClick: header.column.getToggleSortingHandler(),
+                                                    }}
+                                                >
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext(),
+                                                    )}
+                                                    {{
+                                                        asc: <ArrowDown className="h-4 w-4" />,
+                                                        desc: <ArrowUp className="h-4 w-4" />,
+                                                    }[header.column.getIsSorted() as string] ?? null}
+                                                </div>
+                                            )}
                                         </TableHead>
                                     )
                                 })}

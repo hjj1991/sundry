@@ -5,11 +5,11 @@ import {any} from "prop-types";
 // @ts-ignore
 export default function FinancialProductCell({ row }) {
     const options = row.original.financialProductOptions;
-    const maxInterestRate = options && options.length > 0 ? options[0].maximumInterestRate : "N/A";
+    const maximumInterestRate = options && options.length > 0 ? options[0].maximumInterestRate : "N/A";
 
     return (
         <div>
-            {maxInterestRate}
+            {maximumInterestRate}
         </div>
     );
 }
