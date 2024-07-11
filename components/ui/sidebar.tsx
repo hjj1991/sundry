@@ -17,13 +17,24 @@ type Props = {}
 export default function Sidebar({}: Props) {
 
     const [isCollapsed, setIsCollapsed] = React.useState(false)
+    const [isClient, setIsClient] = React.useState(false)
 
     const onlyWidth = useWindowWidth()
     const mobileWidth = onlyWidth < 768
 
+    React.useEffect(() => {
+        setIsClient(true)
+    }, [])
+
     function toggleSidebar(){
         setIsCollapsed(!isCollapsed)
     }
+
+    if (!isClient) {
+        // 서버 사이드 렌더링 중에는 빈 div를 반환합니다.
+        return <div className='relative min-w-[80px] border-r px-3 pb-10 pt-24'></div>
+    }
+
     return (
         <div className='relative min-w-[80px] border-r px-3 pb-10 pt-24'>
             {!mobileWidth &&
@@ -38,27 +49,9 @@ export default function Sidebar({}: Props) {
                 links={[
                     {
                         title: "Financials",
-                        href: "/financials.ts",
+                        href: "/financials",
                         icon: LayoutDashboard,
                         variant: "default",
-                    },
-                    {
-                        title: "Users",
-                        href: "/users",
-                        icon: UsersRound,
-                        variant: "ghost",
-                    },
-                    {
-                        title: "Orders",
-                        href: "/orders",
-                        icon: ShoppingCart,
-                        variant: "ghost",
-                    },
-                    {
-                        title: "Settings",
-                        href: "/settings",
-                        icon: Settings,
-                        variant: "ghost",
                     },
                 ]}
             />

@@ -43,6 +43,15 @@ export type FinancialProductOption = {
     interestRateType: string;
     reserveType: string;
     depositPeriodMonths: string;
-    baseInterestRate: number;
+    baseInterestRate: number | null;
     maximumInterestRate: number | null;
+}
+
+export type SearchParams = {
+    financialGroupType: string;
+    joinRestriction: string;
+    depositPeriodMonths: string;
+    financialProductType: string;
+    page: string | "0";
+    pageSize: string | "20";
 }
