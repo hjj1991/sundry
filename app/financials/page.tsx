@@ -1,3 +1,5 @@
+export const runtime = 'edge';  // Edge Runtime 설정 추가
+
 import { DataTable } from "@/components/DataTable";
 import React, {Suspense} from "react";
 import PageTitle from "@/components/PageTitle";
