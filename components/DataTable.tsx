@@ -15,8 +15,8 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-import { Button } from "./ui/button"
+} from "../components/ui/table"
+import { Button } from "../components/ui/button"
 import {FinancialProduct, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
 import {useEffect, useState} from "react";
