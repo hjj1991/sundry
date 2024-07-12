@@ -76,7 +76,7 @@ async function getFinancials(searchParams: SearchParams) {
 
     // 쿼리 문자열 생성
     const queryString = params.toString();
-    const res = await fetch(`http://localhost:8080/v1/financials?${queryString}`, {
+    const res = await fetch(`${process.env.API_SERVER_HOST}/v1/financials?${queryString}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

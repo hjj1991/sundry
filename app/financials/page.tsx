@@ -1,17 +1,3 @@
-/**
- * eslint-disable @next/next/no-img-element
- *
- * @format
- */
-
-/**
- * eslint-disable @next/next/no-img-element
- *
- * @format
- */
-
-/** @format */
-
 import { DataTable } from "@/components/DataTable";
 import React, {Suspense} from "react";
 import PageTitle from "@/components/PageTitle";
