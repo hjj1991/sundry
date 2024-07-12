@@ -69,7 +69,7 @@ export default function SearchField() {
     return (
         <div>
             <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                     <ToggleGroup type="single" value={financialGroupType}  onValueChange={(value) => handleToggleChange('financialGroupType', value)}>
                         <ToggleGroupItem value="ALL" aria-label="Toggle bold">
                             전체

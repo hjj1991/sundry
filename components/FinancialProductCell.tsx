@@ -1,15 +1,38 @@
-'use client'; // 클라이언트 컴포넌트로 지정
+'use client';
 
-import {any} from "prop-types";
+import { CellContext } from "@tanstack/table-core";
+import { FinancialProduct } from "@/types/financials";
 
-// @ts-ignore
-export default function FinancialProductCell({ row }) {
+interface FinancialProductCellProps extends CellContext<FinancialProduct, any> {
+    depositPeriodMonths: string;
+}
+
+export default function FinancialProductCell({ row, column, depositPeriodMonths }: FinancialProductCellProps) {
     const options = row.original.financialProductOptions;
-    const maximumInterestRate = options && options.length > 0 ? options[0].maximumInterestRate : "N/A";
+    let matchingOption;
+
+    if (depositPeriodMonths === '0') {
+        matchingOption = options.reduce((prev, current) =>
+                prev.financialProductOptionId > current.financialProductOptionId ? prev : current,
+            options[0]
+        );
+    } else {
+        matchingOption = options.find(option => option.depositPeriodMonths === depositPeriodMonths);
+    }
+
+    if (!matchingOption) {
+        return <div>N/A</div>;
+    }
+
+    const value = column.id === 'maximumInterestRate'
+        ? matchingOption.maximumInterestRate ?? "N/A"
+        : column.id === 'baseInterestRate'
+            ? matchingOption.baseInterestRate ?? "N/A"
+            : "N/A";
 
     return (
         <div>
-            {maximumInterestRate}
+            {value} ({matchingOption.depositPeriodMonths} 개월)
         </div>
     );
 }

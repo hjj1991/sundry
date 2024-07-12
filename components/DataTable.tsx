@@ -22,13 +22,14 @@ import FinancialProductCell from "@/components/FinancialProductCell";
 import {useEffect, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
+import {CellContext} from "@tanstack/table-core";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
 }
 
-const columns: ColumnDef<FinancialProduct>[] = [
+const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => [
     {
         accessorKey: "financialCompany.companyName",
         header: "회사명",
@@ -43,14 +44,16 @@ const columns: ColumnDef<FinancialProduct>[] = [
         enableMultiSort: true,
         id: "financialProductName",
     },
-    // {
-    //     accessorKey: "financialProductOptions[0].baseInterestRate",
-    //     header: "기본 이율"
-    // },
+    {
+        accessorKey: "financialProductOptions",
+        header: "기본 이율",
+        cell: (props: CellContext<FinancialProduct, any>) => <FinancialProductCell {...props} depositPeriodMonths={depositPeriodMonths} />,
+        id: "baseInterestRate"
+    },
     {
         accessorKey: "financialProductOptions",
         header: "최고 우대 이율",
-        cell: FinancialProductCell,
+        cell: (props: CellContext<FinancialProduct, any>) => <FinancialProductCell {...props} depositPeriodMonths={depositPeriodMonths} />,
         id: "maximumInterestRate"
     },
 ];
@@ -73,7 +76,6 @@ async function getFinancials(searchParams: SearchParams) {
 
     // 쿼리 문자열 생성
     const queryString = params.toString();
-    console.log(queryString)
     const res = await fetch(`http://localhost:8080/v1/financials?${queryString}`, {
         method: "GET",
         headers: {
@@ -103,7 +105,7 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
         pageIndex: Number(searchParams.page || '0'),
         pageSize: 20, //default page size
     });
-    const [sorting, setSorting] = useState<SortingState>([{id: "companyName", desc: true}]);
+    const [sorting, setSorting] = useState<SortingState>([]);
 
 
     useEffect(() => {
@@ -111,6 +113,7 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
             setData(value.content)
             setPageCount(value.last === true ? 0 : -1)
             setPagination({pageIndex: value.number, pageSize: value.size})
+            setError(null)
             setLoading(false)
         })
             .catch(error => {
@@ -119,13 +122,9 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
             })
     }, [searchParams])
 
-    useEffect(() => {
-        console.log('ahahthr')
-    }, [pagination])
-
     const table = useReactTable({
         data,
-        columns,
+        columns: columns(searchParams.depositPeriodMonths || "0"),
         state: {pagination, sorting},
         onPaginationChange: (updater) => {
             // make sure updater is callable (to avoid typescript warning)
@@ -167,21 +166,6 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
         autoResetPageIndex: false,
         enableMultiSort: true,
     })
-
-    function handlePreviousButton() {
-        const params = new URLSearchParams(searchParams);
-        setPagination({pageIndex: pagination.pageIndex - 1, pageSize: pagination.pageSize});
-        params.set('page', pagination.pageIndex.toString());
-        replace(`${pathname}?${params.toString()}`);
-    }
-
-    function handleNextButton() {
-        const params = new URLSearchParams(searchParams);
-        setPagination({pageIndex: pagination.pageIndex + 1, pageSize: pagination.pageSize});
-        // params.set('page', pagination.pageIndex.toString());
-        // replace(`${pathname}?${params.toString()}`);
-    }
-
 
     if (loading) {
         return <div>Loading...</div>
@@ -263,10 +247,7 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                        console.log('aaa')
-                        table.nextPage()
-                    }}
+                    onClick={() => {table.nextPage()}}
                     disabled={!table.getCanNextPage()} // Disable Next button if on the last page
                 >
                     Next
