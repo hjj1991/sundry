@@ -1,7 +1,7 @@
 "use client"
-import {ToggleGroup, ToggleGroupItem} from "../components/ui/toggle-group";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../components/ui/select";
-import {Input} from "../components/ui/input";
+import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Input} from "@/components/ui/input";
 import React from "react";
 import {usePathname, useSearchParams, useRouter} from "next/navigation";
 import {useDebouncedCallback} from "use-debounce";
