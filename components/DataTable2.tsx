@@ -11,13 +11,14 @@ import {
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "./ui/button"
-import {FinancialProduct, SearchParams} from "@/types/financials";
+import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
 import {useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {CellContext} from "@tanstack/table-core";
 import {useQuery} from "@tanstack/react-query";
+import {cn} from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -31,6 +32,7 @@ const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => 
         enableSorting: true,
         enableMultiSort: true,
         id: "companyName",
+        meta: { className: "hidden sm:block" },
     },
     {
         accessorKey: "financialProductName",
@@ -38,22 +40,25 @@ const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => 
         enableSorting: true,
         enableMultiSort: true,
         id: "financialProductName",
+        meta: { className: "hidden sm:block" },
     },
     {
         accessorKey: "financialProductOptions",
         header: "기본 이율",
         cell: (props: CellContext<FinancialProduct, any>) => <FinancialProductCell {...props} depositPeriodMonths={depositPeriodMonths} />,
-        id: "baseInterestRate"
+        id: "baseInterestRate",
+        meta: { className: "hidden sm:block" },
     },
     {
         accessorKey: "financialProductOptions",
         header: "최고 우대 이율",
         cell: (props: CellContext<FinancialProduct, any>) => <FinancialProductCell {...props} depositPeriodMonths={depositPeriodMonths} />,
-        id: "maximumInterestRate"
+        id: "maximumInterestRate",
+        meta: { className: "hidden sm:block" },
     },
 ];
 
-const getFinancials = async ({ queryKey }: {queryKey: [SearchParams] })=> {
+const getFinancials = async ({ queryKey }: {queryKey: [SearchParams] }): Promise<FinancialProductResponse> => {
     // URLSearchParams 객체를 사용하여 쿼리 파라미터 생성
     // `searchParams`에서 `sort` 배열을 처리하여 올바른 쿼리 파라미터 생성
     const params = new URLSearchParams();
@@ -159,14 +164,15 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
 
     return (
         <div>
-            <div className="rounded-md border">
-                <Table>
+            <div className="rounded-md border res_tbl_wrap">
+            <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} colSpan={header.colSpan}>
+                                        <TableHead key={header.id} colSpan={header.colSpan}
+                                        >
                                             {header.isPlaceholder ? null : (
                                                 <div
                                                     {...{
@@ -199,11 +205,14 @@ export function DataTable({searchParams}: {searchParams:SearchParams}) {
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
                                 >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                                    {row.getVisibleCells().map((cell) => {
+                                        return (
+                                                <TableCell key={cell.id} data-label={cell.column.columnDef.header}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            )
+                                        })
+                                    }
                                 </TableRow>
                             ))
                         ) : (
