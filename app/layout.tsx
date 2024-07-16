@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/ui/sidebar";
 import {cn} from "@/lib/utils";
+import Providers from "@/app/utils/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,7 @@ export default function RootLayout({
       {/* Sidebar */}
       <Sidebar/>
       {/* main page */}
-      <div className="p-8 w-full">{children}</div>
+      <Providers><div className="p-8 w-full">{children}</div></Providers>
       </body>
     </html>
   );
