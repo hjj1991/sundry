@@ -4,9 +4,7 @@ import { Nav } from './nav'
 import {
     ChevronRight,
     LayoutDashboard,
-    Settings,
-    ShoppingCart,
-    UsersRound,
+    StickyNote,
 } from "lucide-react"
 import { Button } from './button'
 
@@ -51,6 +49,12 @@ export default function Sidebar({}: Props) {
                         title: "Financials",
                         href: "/financials",
                         icon: LayoutDashboard,
+                        variant: "default",
+                    },
+                    {
+                        title: "Posts",
+                        href: "/posts",
+                        icon: StickyNote,
                         variant: "default",
                     },
                 ]}
