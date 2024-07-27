@@ -22,12 +22,19 @@ async function fetchPostData(slug: string[]) {
 }
 
 export async function generateStaticParams() {
-    const res = await fetch(`${baseUrl}/api/posts`);
-    if (!res.ok) {
-        throw new Error('Failed to fetch post data');
+    try {
+        const res = await fetch(`${baseUrl}/api/posts`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch post IDs');
+        }
+        const posts = await res.json();
+        return posts.map((post: { id: string }) => ({
+            params: { slug: post.id },
+        }));
+    } catch (error) {
+        console.error('Error fetching post IDs:', error);
+        return [];
     }
-    const posts = await res.json() as PostData[];
-    return posts.map((post) => post.id);
 }
 
 export async function generateMetadata({ params }: Params ): Promise<Metadata> {
