@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import {getAllPostIds, getPostData} from "@/lib/posts";
-
-
-const postsDirectory = 'posts';
+import {Suspense} from "react";
+import {MDXRemote} from "next-mdx-remote/rsc";
+import {useMDXComponents} from "@/app/mdx-components";
 
 interface Params {
     params: {
@@ -25,14 +25,16 @@ export async function generateMetadata({ params }: Params ): Promise<Metadata> {
 }
 
 export default async function Post({ params }: Params) {
-    const { title, description, content } = await getPostData(params.slug);
-
+    const { title, description, source } = await getPostData(params.slug);
+    const components = useMDXComponents();
     // Render the page
     return (
         <>
             <h1>{title}</h1>
             <p>{description}</p>
-            <div>{content}</div>
+            <Suspense fallback={<>Loading...</>}>
+                <MDXRemote source={source} components={components} />;
+            </Suspense>
         </>
     );
 }

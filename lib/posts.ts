@@ -2,8 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import {compileMDX} from "next-mdx-remote/rsc";
-import {ReactElement} from "react";
-import {useMDXComponents} from "@/app/mdx-components";
 import remarkGfm from "remark-gfm";
 
 
@@ -15,7 +13,7 @@ interface PostData {
     date: string;
     category: string;
     description: string;
-    content: ReactElement;
+    source: string;
 }
 
 function getPostFiles(dir: string): string[] {
@@ -62,7 +60,7 @@ export async function getPostData(slug: string[]): Promise<PostData> {
         date: frontmatter.date as string,
         description: frontmatter.description as string,
         category: frontmatter.category as string,
-        content,
+        source,
     };
 }
 
@@ -88,7 +86,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
             title: frontmatter.title,
             date: frontmatter.date,
             category: frontmatter.category,
-            content: content,
+            source: fileContents,
         } as PostData;
     }));
 
