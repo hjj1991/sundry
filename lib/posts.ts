@@ -1,20 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
 import {compileMDX} from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
+import {PostData} from "@/types/posts";
 
 
 const postsDirectory = path.join(process.cwd(), 'posts');
-
-interface PostData {
-    id: string;
-    title: string;
-    date: string;
-    category: string;
-    description: string;
-    source: string;
-}
 
 function getPostFiles(dir: string): string[] {
     let results: string[] = [];
