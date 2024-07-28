@@ -37,7 +37,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-nextjs:${{ steps.extract_version.outputs.version }}
           secrets:
-            - API_SERVER_HOST=${{ secrets.API_SERVER_HOST }}
+            - name: API_SERVER_HOST
+              value: ${{ secrets.API_SERVER_HOST }}
 
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
