@@ -36,8 +36,8 @@ jobs:
           platforms: linux/arm64/v8
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-nextjs:${{ steps.extract_version.outputs.version }}
-          build-args:  # 환경 변수 전달
-            - API_SERVER_HOST: ${{ secrets.API_SERVER_HOST }}
+          build-args: |
+            API_SERVER_HOST=${{ secrets.API_SERVER_HOST }}
 
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
