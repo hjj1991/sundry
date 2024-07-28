@@ -1,7 +1,5 @@
 import {dehydrate, HydrationBoundary, QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
-export const runtime = 'edge';  // Edge Runtime 설정 추가
-
 
 import React, {Suspense} from "react";
 import PageTitle from "@/components/PageTitle";
