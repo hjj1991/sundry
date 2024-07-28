@@ -13,6 +13,11 @@ FROM node:18-alpine AS builder
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+
+# Set build-time arguments
+ARG API_SERVER_HOST
+ENV API_SERVER_HOST=$API_SERVER_HOST
+
 RUN npm run build
 
 # Production image, copy all the files and run next
