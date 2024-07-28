@@ -16,7 +16,7 @@ COPY . .
 
 # Set build-time arguments
 ARG API_SERVER_HOST
-ENV API_SERVER_HOST=$API_SERVER_HOST
+ENV API_SERVER_HOST=${API_SERVER_HOST}
 
 RUN npm run build
 
