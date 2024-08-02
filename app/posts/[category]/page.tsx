@@ -8,6 +8,6 @@ export const metadata = {
     title: 'My Blog',
 };
 
-export default function Home() {
-    return <Posts />
+export default function Category({ params: { category }} : { params: { category: string } }) {
+    return <Posts category={category} />
 }

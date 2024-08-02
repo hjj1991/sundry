@@ -1,6 +1,7 @@
 import type { MDXComponents } from 'mdx/types'
 import Image, { ImageProps } from 'next/image'
 import {ReactNode} from "react";
+import {cn} from "@/lib/utils";
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -15,7 +16,7 @@ const RedText = ({ children }: { children: ReactNode }) => {
 export function useMDXComponents(): MDXComponents {
     return {
         // Allows customizing built-in components, e.g. to add styling.
-        h1: ({ children }) => <h1 style={{ fontSize: '100px' }}>{children}</h1>,
+        h1: ({ children }) => <h1 className={cn("text-6xl font-bold")}>{children}</h1>,
         img: (props) => (
             <Image
                 sizes="100vw"

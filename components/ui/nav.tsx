@@ -43,7 +43,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                                             href={link.href}
                                             className={cn(
                                                 buttonVariants({
-                                                    variant: link.href === pathName ? "default" : "ghost",
+                                                    variant: pathName.startsWith(link.href) ? "default" : "ghost",
                                                     size: "icon"
                                                 }),
                                                 "h-9 w-9",
@@ -73,7 +73,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                                     href={link.href}
                                     className={cn(
                                         buttonVariants({
-                                            variant: link.href === pathName ? "default" : "ghost",
+                                            variant: pathName.startsWith(link.href) ? "default" : "ghost",
                                             size: "sm"
                                         }),
                                         link.variant === "default" &&

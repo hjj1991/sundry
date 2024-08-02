@@ -5,4 +5,5 @@ export type PostData = {
     category: string;
     description: string;
     source: string;
+    thumbnail?: string;
 }
