@@ -19,3 +19,16 @@ export function formatDate(dateString: string): string {
 
   return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
 }
+
+
+export function decodeUriComponentSafe(uriComponent: string): string {
+  try {
+    return decodeURIComponent(uriComponent);
+  } catch (e) {
+    return uriComponent;
+  }
+}
+
+export function doubleDecodeUriComponent(uriComponent: string): string {
+  return decodeUriComponentSafe(decodeUriComponentSafe(uriComponent));
+}

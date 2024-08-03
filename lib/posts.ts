@@ -4,12 +4,13 @@ import {compileMDX} from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import {PostData} from "@/types/posts";
 import { sync } from 'glob';
+import {doubleDecodeUriComponent} from "@/lib/utils";
 
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 function getPostFiles(category?: string) {
-    const folder = category? decodeUriComponentSafe(category) : '**';
+    const folder = category? doubleDecodeUriComponent(category) : '**';
     const paths: string[] = sync(`${postsDirectory}/${folder}/**/*.mdx`);
     return paths;
 };
@@ -18,13 +19,9 @@ export function encodeUriComponentSafe(str: string): string {
     return encodeURIComponent(str).replace(/[!'()*]/g, escape);
 }
 
-export function decodeUriComponentSafe(str: string): string {
-    return decodeURIComponent(str.replace(/\+/g, ' '));
-}
-
 // Function to get post data
 export async function getPostData(category: string, slug: string): Promise<PostData> {
-    const filePath = path.join(postsDirectory, `${decodeUriComponentSafe(path.join(category, slug))}`, 'content.mdx');
+    const filePath = path.join(postsDirectory, `${doubleDecodeUriComponent(path.join(category, slug))}`, 'content.mdx');
     const source = fs.readFileSync(filePath, 'utf8');
     const id = path.basename(filePath, path.extname(filePath)); // 파일 이름에서 확장자를 제거하여 ID 추출
     const { content, frontmatter } = await compileMDX({

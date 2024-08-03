@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/ui/sidebar";
+import Header from "@/components/ui/header";
 import {cn} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
 
@@ -23,10 +23,14 @@ export default function RootLayout({
               {"debug-screens": process.env.NODE_ENV === "development"}
           )}
       >
-      {/* Sidebar */}
-      <Sidebar/>
+      {/* Header */}
+      <Header/>
       {/* main page */}
-      <Providers><div className="p-8 w-full">{children}</div></Providers>
+      <Providers>
+          <main className="flex-1 pt-24 px-4 sm:px-8"> {/* pt-16으로 헤더의 높이만큼 패딩 추가 */}
+              {children}
+          </main>
+      </Providers>
       </body>
     </html>
   );
