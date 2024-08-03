@@ -5,6 +5,8 @@ import {getAllPostIds, getPostData} from "@/lib/posts";
 import {cn, formatDate} from "@/lib/utils";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
+import {CalendarRange} from "lucide-react";
+import Link from "next/link";
 
 interface Params {
     params: {
@@ -28,19 +30,23 @@ export async function generateMetadata({ params }: Params ): Promise<Metadata> {
 }
 
 export default async function Post({ params }: Params) {
-    console.log(params)
-    const { title, description, date, source } = await getPostData(params.category, params.slug);
+    const { title, description, date, category, source } = await getPostData(params.category, params.slug);
     const components = useMDXComponents();
     const rehypeOptions = {
         theme: 'slack-dark',
         keepBackground: true,
     };
-    // Render the page
+    const linkUrl = `/posts/${category}`
     return (
         <div className={"container mx-auto"}>
-            <h1 className={cn("text-6xl font-bold")}>{title}</h1>
-            <div>{formatDate(date)}</div>
-            <p>{description}</p>
+            <div className="text-center">
+            <h1 className={cn("text-4xl fonts-bold")}>{title}</h1>
+            <div className="flex flex-col space-x-2 text-neutral-500 mt-8">
+                <div className="my-2 font-bold text-xl text-amber-700"><Link href={linkUrl}>{category}</Link></div>
+                <div className="flex justify-center"><CalendarRange className="float-left" /> <p>{formatDate(date)}</p></div>
+            </div>
+            </div>
+            <hr className="border-2 border-dotted my-8 border-amber-400" />
             <MDXRemote
                 source={source}
                 components={components}
@@ -49,7 +55,7 @@ export default async function Post({ params }: Params) {
                 mdxOptions: {
                     remarkPlugins: [remarkGfm],
                     rehypePlugins: [[rehypePrettyCode, rehypeOptions]]
-                }}} />;
+                }}} />
         </div>
     );
 }

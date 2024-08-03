@@ -1,0 +1,391 @@
+---
+title: Spring Cache 알아보기 - 1
+date: 2024-08-03T00:00:00Z
+category: 개발
+writer: 뜨끔
+thumbnail: /posts/개발/Spring Cache 알아보기 - 1/thumbnail.jpg
+---
+
+개발을 하며 알게 된 것들을 개인적으로 적고 공유 하는 거라 내용이 많이 틀릴 수 있습니다.
+
+이번에는 스프링부트에서 캐시를 사용하며 알게 된 내용이나 여러가지 정보들을 정리하려고 합니다.
+
+1편에서는 주로 스프링부트에서 등록 및 어노테이션을 이용한 간단한 사용방법에 대해 알아봅시다.
+
+## 캐시란?
+
+일단 딱딱하게 정의부터 말하자면 데이터를 `임시로 저장`해두는 메모리 영역이라고 볼 수 있습니다.
+
+저는 백엔드 개발자인데 캐시는 주로 API가 호출되었을때 응답값으로 주는 값이 자주 변하지 않는 데이터를 캐싱 처리하여 많이 사용합니다.
+
+**ex) 날짜에 따라 값이 변하는 API일때 < 이런경우는 하루동안 데이터가 변할일이 없기 때문에 캐시에 저장해서 응답해주면 빠르겠죠?**
+
+이렇게 할 경우 만약 DB에 데이터를 가져와서 계산을 해서 응답을 주는 API라고하면 캐시저장소에 있는 값을 바로 꺼내서 사용자에게 응답을 내려주게 됩니다.
+
+또한 TTL도 길게 잡아도 상관이 없겠죠? 왜냐하면 날짜를 키값으로 캐시에 저장한다면 날짜에 따라 다른 캐시값이 조회가 될테니까요.
+
+> TTL(Time To Live) => 캐시의 유효시간이라고 보시면 됩니다.
+
+그럼 본격적으로 스프링에서 캐시를 사용하는 방법을 알아봅시다.
+
+저도 자세히는 알지 못하지만 스프링은 많은 것들을 추상화하여 사용자가 손쉽게 사용할 수 있도록 제공해줍니다.
+
+일단 스프링에서 사용하기 위해 의존성 부터 추가해줍시다.
+
+## 스프링 캐시 의존성 추가
+https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache/3.3.2 Maven 저장소로 갑시다. (작성시점 스프링부트 버전임)
+```java title="Gradle 의존성 추가"
+implementation 'org.springframework.boot:spring-boot-starter-cache:3.3.2'
+```
+프로젝트의 build.gradle에 추가해줍시다.
+
+## CacheManager
+추상화된 캐시를 사용하기 위해 스프링에서 제공하는것이 `Cache Manager`입니다.
+
+Cache Manager를 구현해놓은 구현체는 다양하게 존재하는데 대략적인 것은 다음과 같습니다.
+
+다양하게 많은 캐시 매니저가 있으며 Abstract가 붙은 Class 는 추상클래스로 해당 기능을 상속받아 커스텀하게 구현하고 싶을때 사용하시면 됩니다.
+
+이밖에도 많은 캐시 매니저들이 있습니다. 캐시저장소로 많이들 사용하는 redis라던지 이런 경우에도 스프링부트의 redis 의존성을 추가하면 사용하실 수 있습니다.
+
+인텔리지에서 구현체 검색했을때의 목록
+
+<img
+    src="/posts/개발/Spring Cache 알아보기 - 1/cache_impl.png"
+    alt="Alt text"
+    width={1000}
+/>
+
+- **AbstractCacheManager**
+- 스프링 캐시 매니저의 기본 구현체로, 캐시 초기화 로직을 제공하는 추상 클래스입니다. 구체적인 캐시 매니저들은 이 클래스를 상속받아 다양한 캐시 초기화 로직을 구현합니다.
+- **AbstractTransactionSupportingCacheManager**
+- 트랜잭션을 지원하는 캐시 매니저의 기본 클래스입니다. 트랜잭션 동작에 맞게 캐시를 동기화하는 기능을 제공합니다.
+- **CaffeineCacheManager**
+- 고성능 캐시 라이브러리인 Caffeine을 사용하는 캐시 매니저입니다. Caffeine은 높은 성능과 유연한 설정 옵션을 제공하는 자바 기반 캐시 라이브러리입니다.
+- **CompositeCacheManager**
+- 여러 캐시 매니저를 조합하여 사용할 수 있게 해주는 캐시 매니저입니다. 여러 캐시 매니저를 순차적으로 조회하여 캐시를 찾습니다.
+- **ConcurrentMapCacheManager**
+- 자바의 `ConcurrentHashMap`을 기반으로 하는 단순한 캐시 매니저입니다.
+- **JCacheCacheManager**
+- JSR-107 (Java Caching API)를 구현한 캐시 매니저입니다. 다양한 JCache 구현체를 사용할 수 있게 해줍니다.
+- **NoOpCacheManager**
+- 아무 동작도 하지 않는 캐시 매니저입니다. 캐시를 사용하지 않으려는 경우에 사용됩니다.
+- **SimpleCacheManager**
+- 간단한 캐시 매니저로, 프로그래밍 방식으로 캐시 인스턴스를 설정할 수 있습니다. (수동으로 캐시를 구성할 수 있으며, 테스트나 간단한 사용 사례에 적합합니다.)
+- **TransactionAwareCacheManagerProxy**
+- 기존의 캐시 매니저에 트랜잭션 인식 기능을 추가하는 프록시 캐시 매니저입니다.
+
+
+## 프로젝트 캐시매니저 설정 추가
+외부 의존성을 제외하고 단순히 로컬에서 캐시를 사용하기 위해 저는 CaffeineCacheManager를 이용하여 추가해보겠습니다.
+
+만약 Redis나 외부저장소에 저장되는 캐시매니저를 사용한다면 key,value의 Serialize와 Deserialize설정을 잘해주셔야 문제가 발생하지 않아요. 나중에 이부분도 자세히 작성 할 예정입니다.
+```kotlin title="캐시 설정추가"
+@EnableCaching // 캐시를 사용하려면 추가하여야합니다.
+@Configuration
+class CacheConfig {
+    @Bean(name = ["caffeineCacheManager"])
+    fun cacheManager(): CacheManager =
+        CaffeineCacheManager().apply {
+            setCaffeine(
+                Caffeine.newBuilder()
+                    .initialCapacity(200)
+                    .maximumSize(500)
+                    .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
+                    .weakKeys()
+            )
+        }
+}
+
+```
+
+
+## @EnableCaching
+- 스프링 프레임워크에서 캐싱 기능을 활성화하는 데 사용됩니다.
+- 이 애노테이션을 클래스에 추가하면 스프링의 캐시 기능을 사용할 수 있는 환경이 설정됩니다.
+```java title="@EnableCaching"
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import({CachingConfigurationSelector.class})
+public @interface EnableCaching {
+    boolean proxyTargetClass() default false;
+    //용도: 캐시 어드바이저가 CGLIB 프록시를 사용할지 여부를 결정합니다.
+    //설명: false(기본값)으로 설정된 경우 JDK 동적 프록시를 사용하고, true로 설정된 경우 CGLIB를 사용하여 프록시를 생성합니다. CGLIB를 사용하면 클래스 전체를 프록시로 감쌀 수 있으며, 인터페이스가 없는 클래스에 대해 프록시를 생성할 수 있습니다.
+
+    AdviceMode mode() default AdviceMode.PROXY;
+    //용도: 캐싱 어드바이스의 모드를 설정합니다.
+    //설명: AdviceMode.PROXY가 기본값으로, 프록시 기반의 어드바이저를 사용하여 캐싱 기능을 적용합니다. AdviceMode.ASPECTJ를 설정할 경우, AspectJ를 사용하여 어드바이스를 적용할 수 있습니다. AdviceMode.PROXY는 프록시 기반의 캐싱을 사용하는 기본적인 방식입니다.
+
+    int order() default Integer.MAX_VALUE;
+    //용도: 캐시 어드바이저의 실행 순서를 설정합니다.
+    //설명: order 속성은 여러 어드바이저가 있을 때, 이들의 실행 순서를 정의합니다. 기본값인 Integer.MAX_VALUE는 가장 높은 우선순위를 가지며, 기본적으로 가장 마지막에 실행됩니다. 이를 통해 어드바이저의 우선순위를 조정할 수 있습니다.
+}
+```
+
+## @Cacheable
+- 메서드를 싱행하면 저장소에 조회하여 없으면 결과를 캐시에 저장하고, 동일한 파라미터로 메서드를 호출할 때 캐시된 결과를 반환함으로써 성능을 최적화합니다.
+- 만약 예외가 발생시 캐시는 저장하지 않습니다.
+
+어노테이션은 아래처럼 정의 되어있습니다. 각각의 자세한 설명은 ChatGPT의 도움을 받았습니다.
+```java title="@Cacheable"
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@Reflective
+public @interface Cacheable {
+    @AliasFor("cacheNames")
+    String[] value() default {};
+    //용도: 캐시 이름을 지정합니다. cacheNames 속성과 동일하게 동작하며, 두 속성은 서로의 별칭(alias)입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    @AliasFor("value")
+    String[] cacheNames() default {};
+    //용도: 캐시 이름을 지정합니다. value 속성과 동일하게 동작하며, 두 속성은 서로의 별칭입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    String key() default "";
+    //용도: 캐시 항목을 저장할 때 사용할 키를 SpEL(Spring Expression Language)로 지정합니다.
+    //설명: 기본값은 빈 문자열이며, 메서드 파라미터를 기준으로 자동 생성됩니다. 특정 키를 명시적으로 지정하고 싶을 때 사용합니다.
+
+    String keyGenerator() default "";
+    //용도: 커스텀 키 생성기를 지정합니다.
+    //설명: 기본적으로는 스프링이 제공하는 키 생성기를 사용하지만, keyGenerator 속성을 통해 커스텀 키 생성기를 명시할 수 있습니다.
+
+    String cacheManager() default "";
+    //용도: 사용할 캐시 매니저 빈의 이름을 지정합니다.
+    //설명: 여러 캐시 매니저가 있는 경우, 특정 캐시 매니저를 명시적으로 지정할 때 사용합니다.
+
+    String cacheResolver() default "";
+    //용도: 캐시 리졸버를 지정합니다.
+    //설명: 캐시 리졸버는 어떤 캐시를 사용할지 결정하는 역할을 합니다. cacheResolver를 통해 커스텀 캐시 리졸버를 지정할 수 있습니다.
+
+    String condition() default "";
+    //용도: 캐시 조건을 지정합니다.
+    //설명: SpEL 표현식을 사용하여 조건을 지정할 수 있으며, 조건이 참일 경우에만 캐싱이 이루어집니다.
+
+    String unless() default "";
+    //용도: 캐시에서 제외할 조건을 지정합니다.
+    //설명: SpEL 표현식을 사용하여 조건을 지정할 수 있으며, 조건이 참일 경우 캐싱되지 않습니다. condition과 반대로 동작합니다.
+
+    boolean sync() default false;
+    //용도: 캐시를 동기적으로 사용할지 여부를 지정합니다.
+    //설명: true로 설정하면 캐시를 동기적으로 사용합니다. 이는 캐시가 아직 로드되지 않았을 때, 동일한 키에 대한 여러 호출이 블로킹되지 않도록 보장합니다.
+}
+```
+사용예) users라는 캐시이름을 갖고 있으며 키값으로 username으로 된값이 없으면 UserDetails값을 저장하게됩니다.
+있으면 캐시 값을 반환해줍니다.
+```kotlin title="@Cacheable"
+@Cacheable(value = ["users"], key = "#username")
+override fun loadUserByUsername(username: String): UserDetails {
+    return userRepository.findByIdOrNull(username.toLong())?.run {
+        CurrentUserInfo(
+            userId = "userId",
+            nickName = nickName,
+            userNo = userNo!!,
+            role = role,
+        )
+    } ?: throw UserNotFoundException()
+}
+```
+
+## @CacheEvict
+- 스프링에서 메서드 호출 시 특정 캐시 항목을 제거하는 데 사용됩니다.
+- 이 애노테이션을 통해 캐시된 데이터를 삭제하여 최신 상태로 유지할 수 있습니다.
+
+애노테이션은 아래처럼 정의 되어있습니다. 대부분 Cacheable와 동일한 것을 볼 수 있습니다.
+각각의 자세한 설명은 ChatGPT의 도움을 받았습니다.
+```java title="@CacheEvict"
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@Reflective
+public @interface CacheEvict {
+    @AliasFor("cacheNames")
+    String[] value() default {};
+    //용도: 캐시 이름을 지정합니다. cacheNames 속성과 동일하게 동작하며, 두 속성은 서로의 별칭(alias)입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    @AliasFor("value")
+    String[] cacheNames() default {};
+    //용도: 캐시 이름을 지정합니다. value 속성과 동일하게 동작하며, 두 속성은 서로의 별칭입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    String key() default "";
+    //용도: 캐시 항목을 저장할 때 사용할 키를 SpEL(Spring Expression Language)로 지정합니다.
+    //설명: 기본값은 빈 문자열이며, 메서드 파라미터를 기준으로 자동 생성됩니다. 특정 키를 명시적으로 지정하고 싶을 때 사용합니다.
+
+    String keyGenerator() default "";
+    //용도: 커스텀 키 생성기를 지정합니다.
+    //설명: 기본적으로는 스프링이 제공하는 키 생성기를 사용하지만, keyGenerator 속성을 통해 커스텀 키 생성기를 명시할 수 있습니다.
+
+    String cacheManager() default "";
+    //용도: 사용할 캐시 매니저 빈의 이름을 지정합니다.
+    //설명: 여러 캐시 매니저가 있는 경우, 특정 캐시 매니저를 명시적으로 지정할 때 사용합니다.
+
+    String cacheResolver() default "";
+    //용도: 캐시 리졸버를 지정합니다.
+    //설명: 캐시 리졸버는 어떤 캐시를 사용할지 결정하는 역할을 합니다. cacheResolver를 통해 커스텀 캐시 리졸버를 지정할 수 있습니다.
+
+    String condition() default "";
+    //용도: 캐시 조건을 지정합니다.
+    //설명: SpEL 표현식을 사용하여 조건을 지정할 수 있으며, 조건이 참일 경우에만 캐싱이 이루어집니다.
+
+    boolean allEntries() default false;
+    //용도: 캐시 내의 모든 항목을 제거할지 여부를 지정합니다.
+    //설명: true로 설정하면 지정된 캐시 이름의 모든 항목이 제거됩니다. key 속성보다 우선적으로 적용됩니다.
+
+    boolean beforeInvocation() default false;
+    //용도: 메서드 호출 전(before) 또는 후(after)에 캐시 항목을 제거할지 여부를 지정합니다.
+    //설명: true로 설정하면 메서드가 호출되기 전에 캐시 항목을 제거합니다. 기본값은 false로, 메서드 호출 후에 캐시 항목을 제거합니다.
+}
+
+```
+사용예) users라는 캐시이름을 갖고 있으며 키값으로 username으로 된 값을 찾아 메서드가 정상 실행되면 캐시 저장소에서 삭제하게됩니다.
+```kotlin
+@CacheEvict(value = ["users"], key = "#username")
+fun remove(username: String) {
+    ....
+}
+```
+
+## @CachePut
+- @Cacheable과 유사하지만, @CachePut은 캐시를 조회하는 것이 아니라 항상 메서드 결과를 캐시에 저장합니다. 이 애노테이션은 캐시를 업데이트할 때 유용합니다.
+```java title="@CachePut"
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@Reflective
+public @interface CachePut {
+    @AliasFor("cacheNames")
+    String[] value() default {};
+    //용도: 캐시 이름을 지정합니다. cacheNames 속성과 동일하게 동작하며, 두 속성은 서로의 별칭(alias)입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    @AliasFor("value")
+    String[] cacheNames() default {};
+    //용도: 캐시 이름을 지정합니다. value 속성과 동일하게 동작하며, 두 속성은 서로의 별칭입니다.
+    //설명: 캐시 이름을 지정할 때 사용되며, 하나 이상의 캐시 이름을 배열 형태로 설정할 수 있습니다.
+
+    String key() default "";
+    //용도: 캐시 항목을 저장할 때 사용할 키를 SpEL(Spring Expression Language)로 지정합니다.
+    //설명: 기본값은 빈 문자열이며, 메서드 파라미터를 기준으로 자동 생성됩니다. 특정 키를 명시적으로 지정하고 싶을 때 사용합니다.
+
+    String keyGenerator() default "";
+    //용도: 커스텀 키 생성기를 지정합니다.
+    //설명: 기본적으로는 스프링이 제공하는 키 생성기를 사용하지만, keyGenerator 속성을 통해 커스텀 키 생성기를 명시할 수 있습니다.
+
+    String cacheManager() default "";
+    //용도: 사용할 캐시 매니저 빈의 이름을 지정합니다.
+    //설명: 여러 캐시 매니저가 있는 경우, 특정 캐시 매니저를 명시적으로 지정할 때 사용합니다.
+
+    String cacheResolver() default "";
+    //용도: 캐시 리졸버를 지정합니다.
+    //설명: 캐시 리졸버는 어떤 캐시를 사용할지 결정하는 역할을 합니다. cacheResolver를 통해 커스텀 캐시 리졸버를 지정할 수 있습니다.
+
+    String condition() default "";
+    //용도: 캐시 조건을 지정합니다.
+    //설명: SpEL 표현식을 사용하여 조건을 지정할 수 있으며, 조건이 참일 경우에만 캐싱이 이루어집니다.
+
+    String unless() default "";
+    //용도: 캐시에서 제외할 조건을 지정합니다.
+    //설명: SpEL 표현식을 사용하여 조건을 지정할 수 있으며, 조건이 참일 경우 캐싱되지 않습니다. condition과 반대로 동작합니다.
+}
+
+```
+사용예) users라는 캐시이름을 갖고 있으며 키값으로 username으로 된 UserDetails값을 저장하게됩니다.
+```kotlin
+@CachePut(value = ["users"], key = "#username")
+override fun loadUserByUsername(username: String): UserDetails {
+    return userRepository.findByIdOrNull(username.toLong())?.run {
+        CurrentUserInfo(
+            userId = "userId",
+            nickName = nickName,
+            userNo = userNo!!,
+            role = role,
+        )
+    } ?: throw UserNotFoundException()
+}
+```
+
+
+## @Caching
+- 스프링에서 캐시 관련 애노테이션을 조합하여 한 메서드 또는 클래스에 적용할 수 있는 편리한 방법을 제공합니다.
+이 애노테이션을 사용하면 여러 캐시 작업을 동시에 구성할 수 있습니다.
+- @Caching 애노테이션을 사용하여 @Cacheable, @CachePut, @CacheEvict 등의 캐시 애노테이션을 함께 정의할 수 있습니다.
+```java title="@Caching"
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@Reflective
+public @interface Caching {
+    Cacheable[] cacheable() default {};
+
+    CachePut[] put() default {};
+
+    CacheEvict[] evict() default {};
+}
+```
+사용예) 아래처럼 사용하진 않겠지만 여러개를 적용하는 방법의 예시입니다.
+```kotlin
+@Caching(
+    cacheable = [Cacheable(value = ["productCache"], key = "#product.id")],
+    put = [CachePut(value = ["productCache"], key = "#product.id")],
+    evict = [CacheEvict(value = ["productCache"], key = "#product.id")]
+)
+fun updateProduct(product: Product): Product {
+    return product
+}
+```
+
+## @CacheConfig
+- 캐시 관련 설정을 클래스 레벨에서 공통적으로 적용할 때 사용됩니다.
+- 이 애노테이션을 사용하면 여러 메서드에서 공통적으로 사용할 캐시 설정을 클래스 레벨에서 정의할 수 있습니다.
+이는 코드 중복을 줄이고, 캐시 설정을 중앙 집중적으로 관리하는 데 유용합니다.
+```java title="@CacheConfig"
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface CacheConfig {
+    String[] cacheNames() default {};
+    //용도: 캐시의 이름을 정의합니다.
+    //설명: 캐시를 적용할 때 사용할 캐시 이름을 배열 형태로 지정할 수 있습니다. 여러 캐시 이름을 지정할 수 있으며,
+    //     이 이름은 @Cacheable, @CachePut, @CacheEvict 애노테이션의 value 또는 cacheNames 속성에 사용될 수 있습니다.
+    String keyGenerator() default "";
+    //용도: 캐시 키를 생성할 때 사용할 커스텀 키 생성기의 이름을 지정합니다.
+    //설명: 지정된 이름의 커스텀 KeyGenerator 빈을 사용하여 캐시 키를 생성합니다. 기본적으로는 스프링의 기본 키 생성기를 사용하지만, 이 속성을 통해 커스텀 키 생성기를 사용할 수 있습니다.
+    String cacheManager() default "";
+    //용도: 사용할 캐시 매니저 빈의 이름을 지정합니다.
+    //설명: 여러 개의 캐시 매니저가 있을 때, 특정 캐시 매니저를 지정하여 캐시 작업을 수행합니다. 이 속성에 지정된 캐시 매니저가 캐시 작업에 사용됩니다.
+
+    String cacheResolver() default "";
+    //용도: 캐시 리졸버의 이름을 지정합니다.
+    //설명: 캐시 리졸버는 캐시를 선택할 때 사용하는 빈입니다. 특정 캐시 리졸버를 지정하여 캐시를 동적으로 선택할 수 있습니다.
+}
+```
+사용예)
+```kotlin
+@Service
+@CacheConfig(
+    cacheNames = ["productCache"],
+    keyGenerator = "keyGenerator",
+    cacheManager = "cacheManager"
+)
+class ProductService {
+
+    @Cacheable
+    fun getProductById(productId: String): Product {
+        // 제품 정보를 조회하고 반환
+    }
+
+    @CachePut
+    fun updateProduct(product: Product): Product {
+        // 제품 정보를 업데이트하고 반환
+        return product
+    }
+}
+```

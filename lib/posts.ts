@@ -63,9 +63,9 @@ export async function getSortedPostsData(category?: string): Promise<PostData[]>
         });
 
         // 1. 파일명을 제외한 디렉토리 경로 추출
-        const dirPath = path.dirname(filePath); // '/Users/hwangjaejeong/study/javascript/sundry/posts/잡다한거/테스트'
+        const dirPath = path.dirname(filePath);
 
-        // 2. 필요한 부분만 추출 (잡다한거/테스트)
+        // 2. 필요한 부분만 추출
         const segments = dirPath.split(path.sep); // 경로를 배열로 분할
         const startIndex = segments.indexOf('posts') + 1; // 'posts' 다음 인덱스부터 추출
         const categoryAndTitle = segments.slice(startIndex, startIndex + 2);

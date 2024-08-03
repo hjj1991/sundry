@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "korLibrary";
+  src: url("/fonts/korLibrary_kr.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "korLibrary_en";
+  src: url("/fonts/korLibrary_en.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "jalnan";
+  src: url("/fonts/Jalnan2TTF.ttf") format("truetype");
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -10,6 +10,10 @@ const config = {
 	],
   prefix: "",
   theme: {
+    fontFamily: {
+      korLibrary: ["korLibrary", "korLibrary_en"],
+      jalnan: ["jalnan"]
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -18,6 +22,13 @@ const config = {
       },
     },
     extend: {
+      margin: {
+        '8': '2rem',
+        '16': '4rem',
+      },
+      spacing: {
+        '96': '24rem',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

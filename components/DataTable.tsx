@@ -83,8 +83,6 @@ async function getFinancials(searchParams: SearchParams) {
         },
         cache: "no-cache"
     })
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, 잡다한거.
 
     if (!res.ok) {
         // This will activate the closest `error.js` Error Boundary
