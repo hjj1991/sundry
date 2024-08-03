@@ -1,5 +1,8 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import {GenerateMetadataProps} from "@/types/common";
+import {META} from "@/constants/metadata";
+import {Metadata} from "next";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -32,3 +35,42 @@ export function decodeUriComponentSafe(uriComponent: string): string {
 export function doubleDecodeUriComponent(uriComponent: string): string {
   return decodeUriComponentSafe(decodeUriComponentSafe(uriComponent));
 }
+
+export const getMetadata = (metadataProps?: GenerateMetadataProps) => {
+  const { title, description, asPath, ogImage } = metadataProps || {};
+
+  const TITLE = title ? `${title} | 잡다창고` : META.title;
+  const DESCRIPTION = description || META.description;
+  const PAGE_URL = asPath ? asPath : '';
+  const OG_IMAGE = ogImage || META.ogImage;
+
+  const metadata: Metadata = {
+    metadataBase: new URL(META.url),
+    alternates: {
+      canonical: PAGE_URL,
+    },
+    title: TITLE,
+    description: DESCRIPTION,
+    keywords: [...META.keyword],
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      siteName: TITLE,
+      locale: 'ko_KR',
+      type: 'website',
+      url: PAGE_URL,
+      images: {
+        url: OG_IMAGE,
+      },
+    },
+    twitter: {
+      title: TITLE,
+      description: DESCRIPTION,
+      images: {
+        url: OG_IMAGE,
+      },
+    },
+  };
+
+  return metadata;
+};

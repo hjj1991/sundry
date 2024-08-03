@@ -17,6 +17,11 @@
   src: url("/fonts/Jalnan2TTF.ttf") format("truetype");
 }
 
+@layer components {
+  li > p {
+    @apply inline;
+  }
+}
 
 @layer base {
   :root {
@@ -122,52 +127,97 @@
   }
 }
 
-[data-rehype-pretty-code-figure] pre {
-  overflow-x: auto;
-  padding: 1rem 0;
-  border: 1px solid #8b8b8b;
-  margin-top: 0;
-}
-
-[data-rehype-pretty-code-title] {
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.4rem 1rem;
-  border: 1px solid #8b8b8b;
-  border-top-left-radius: 0.4rem;
-  border-top-right-radius: 0.4rem;
-  border-bottom-style: none;
-}
-
-[data-rehype-pretty-code-title] + pre {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.dark [data-rehype-pretty-code-title] {
-  /* 다크모드 설정 관련 */
-}
-
 code {
   counter-reset: line;
+}
+
+/* 코드 블록 스타일 */
+[data-rehype-pretty-code-figure] pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid #e1e4e8; /* One Light 색상 */
+  border-radius: 0.5rem;
+  background-color: #fafbfc; /* 밝은 배경색 */
+  margin-top: 0;
+  position: relative; /* 라인 번호 절대 위치 설정을 위한 상대 위치 */
+}
+
+/* 코드 블록 제목 스타일 */
+[data-rehype-pretty-code-title] {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border: 1px solid #e1e4e8;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom: none;
+  background-color: #f1f3f5; /* 제목 배경색 */
+  color: #24292e; /* 제목 텍스트 색상 */
+}
+
+/* 다크 모드에서의 코드 블록 스타일 */
+.dark [data-rehype-pretty-code-figure] pre {
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+}
+
+/* 다크 모드에서의 코드 블록 제목 스타일 */
+.dark [data-rehype-pretty-code-title] {
+  border: 1px solid #333;
+  background-color: #2d2d2d;
+  color: #d4d4d4;
+}
+
+/* 다크 모드에서의 문법 강조 스타일 */
+.dark [data-rehype-pretty-code-figure] .token.keyword {
+  color: #c586c0;
+}
+
+.dark [data-rehype-pretty-code-figure] .token.string {
+  color: #ce9178;
+}
+
+.dark [data-rehype-pretty-code-figure] .token.comment {
+  color: #6a737d;
+}
+
+.dark [data-rehype-pretty-code-figure] .token.function {
+  color: #dcdcaa; /* 함수 색상 */
+}
+
+.dark [data-rehype-pretty-code-figure] .token.number {
+  color: #b5cea8; /* 숫자 색상 */
+}
+
+/* 코드 라인 번호 스타일 */
+[data-rehype-pretty-code-figure] pre code {
+  display: flex;
+  position: relative;
+  padding-left: 3rem; /* 라인 번호를 위한 패딩 */
 }
 
 code > [data-line]::before {
   counter-increment: line;
   content: counter(line);
-
-  /* Other styling */
   display: inline-block;
-  width: 1rem;
-  margin-right: 2rem;
+  width: 2.5rem; /* 라인 번호 너비 조정 */
+  margin-right: 1rem;
   text-align: right;
-  color: gray;
+  color: #6a737d; /* 연한 회색 */
+  background: #fafbfc; /* 코드 배경과 같은 색상 */
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  position: absolute; /* 절대 위치 지정 */
+  left: 0; /* 코드 블록 내에서 왼쪽에 위치 */
 }
 
-code[data-line-numbers-max-digits="2"] > [data-line]::before {
-  width: 2rem;
+/* 코드 블록 내 링크 스타일 */
+[data-rehype-pretty-code-figure] a {
+  color: #0366d6; /* 링크 색상 */
+  text-decoration: underline; /* 밑줄 추가 */
 }
 
-code[data-line-numbers-max-digits="3"] > [data-line]::before {
-  width: 3rem;
+[data-rehype-pretty-code-figure] a:hover {
+  color: #0056b3; /* 링크 hover 색상 */
 }

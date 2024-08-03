@@ -83,14 +83,37 @@ export async function getSortedPostsData(category?: string): Promise<PostData[]>
 
     return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
-export function getAllPostIds(category?: string) {
+
+export function getAllSlugIds(category?: string) {
+    // 포스트 파일 경로를 가져옵니다.
     const filePaths = getPostFiles(category);
+
+    // 파일 경로를 처리하여 슬러그를 생성합니다.
     return filePaths.map((filePath) => {
-        const id = path.basename(filePath, '.mdx'); // 파일 이름에서 .md를 제거하여 ID 추출
+        // 파일 경로에서 디렉토리 이름을 추출합니다.
+        const dirName = path.dirname(filePath);
+
+        // 디렉토리 이름에서 마지막 부분을 추출합니다.
+        const fileName = path.basename(dirName);
+
+        // 슬러그로 사용하기 위해 URL-safe 문자열로 인코딩합니다.
+        const slug = encodeURIComponent(fileName);
         return {
-            params: {
-                slug: encodeUriComponentSafe(id),
-            },
+            slug: slug,
+        };
+    });
+}
+
+export function getAllCategoryIds(category?: string) {
+    const filePaths = getPostFiles(category);
+
+    return filePaths.map((filePath) => {
+        // 전체 경로에서 "회고" 부분을 추출하기 위해 디렉토리 경로를 가져옵니다.
+        const dirPath = path.dirname(filePath); // /Users/hwangjaejeong/study/javascript/sundry/posts/회고/늦었지만 2024년에 써보는 2023년 회고
+        const parentDir = path.dirname(dirPath); // /Users/hwangjaejeong/study/javascript/sundry/posts/회고
+        const categoryDir = path.basename(parentDir); // 회고
+        return {
+            category: encodeURIComponent(categoryDir),
         };
     });
 }

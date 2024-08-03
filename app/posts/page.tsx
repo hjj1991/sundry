@@ -1,12 +1,8 @@
-import {getSortedPostsData} from "@/lib/posts";
-import Link from "next/link";
-import {formatDate} from "@/lib/utils";
 import Posts from "@/components/post/Posts";
+import {getMetadata} from "@/lib/utils";
 
 
-export const metadata = {
-    title: 'My Blog',
-};
+export const metadata = getMetadata({title: '게시판', asPath:'/posts'});
 
 export default function Home() {
     return <Posts />

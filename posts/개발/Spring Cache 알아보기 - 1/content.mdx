@@ -57,23 +57,33 @@ Cache Manager를 구현해놓은 구현체는 다양하게 존재하는데 대�
 />
 
 - **AbstractCacheManager**
-- 스프링 캐시 매니저의 기본 구현체로, 캐시 초기화 로직을 제공하는 추상 클래스입니다. 구체적인 캐시 매니저들은 이 클래스를 상속받아 다양한 캐시 초기화 로직을 구현합니다.
-- **AbstractTransactionSupportingCacheManager**
-- 트랜잭션을 지원하는 캐시 매니저의 기본 클래스입니다. 트랜잭션 동작에 맞게 캐시를 동기화하는 기능을 제공합니다.
-- **CaffeineCacheManager**
-- 고성능 캐시 라이브러리인 Caffeine을 사용하는 캐시 매니저입니다. Caffeine은 높은 성능과 유연한 설정 옵션을 제공하는 자바 기반 캐시 라이브러리입니다.
-- **CompositeCacheManager**
-- 여러 캐시 매니저를 조합하여 사용할 수 있게 해주는 캐시 매니저입니다. 여러 캐시 매니저를 순차적으로 조회하여 캐시를 찾습니다.
-- **ConcurrentMapCacheManager**
-- 자바의 `ConcurrentHashMap`을 기반으로 하는 단순한 캐시 매니저입니다.
-- **JCacheCacheManager**
-- JSR-107 (Java Caching API)를 구현한 캐시 매니저입니다. 다양한 JCache 구현체를 사용할 수 있게 해줍니다.
-- **NoOpCacheManager**
-- 아무 동작도 하지 않는 캐시 매니저입니다. 캐시를 사용하지 않으려는 경우에 사용됩니다.
-- **SimpleCacheManager**
-- 간단한 캐시 매니저로, 프로그래밍 방식으로 캐시 인스턴스를 설정할 수 있습니다. (수동으로 캐시를 구성할 수 있으며, 테스트나 간단한 사용 사례에 적합합니다.)
-- **TransactionAwareCacheManagerProxy**
-- 기존의 캐시 매니저에 트랜잭션 인식 기능을 추가하는 프록시 캐시 매니저입니다.
+<LiDescription>스프링 캐시 매니저의 기본 구현체로, 캐시 초기화 로직을 제공하는 추상 클래스입니다.</LiDescription>
+<LiDescription>구체적인 캐시 매니저들은 이 클래스를 상속받아 다양한 캐시 초기화 로직을 구현합니다.</LiDescription>
+
+- **AbstractTransactionSupportingCacheManager**<br />
+<LiDescription>트랜잭션을 지원하는 캐시 매니저의 기본 클래스입니다. 트랜잭션 동작에 맞게 캐시를 동기화하는 기능을 제공합니다.</LiDescription>
+
+- **CaffeineCacheManager**<br />
+<LiDescription>고성능 캐시 라이브러리인 Caffeine을 사용하는 캐시 매니저입니다. Caffeine은 높은 성능과 유연한 설정 옵션을 제공하는 자바 기반 캐시 라이브러리입니다.</LiDescription>
+
+- **CompositeCacheManager**<br />
+<LiDescription>여러 캐시 매니저를 조합하여 사용할 수 있게 해주는 캐시 매니저입니다. 여러 캐시 매니저를 순차적으로 조회하여 캐시를 찾습니다.</LiDescription>
+
+- **ConcurrentMapCacheManager**<br />
+<LiDescription>자바의 `ConcurrentHashMap`을 기반으로 하는 단순한 캐시 매니저입니다.</LiDescription>
+
+- **JCacheCacheManager**<br />
+<LiDescription>JSR-107 (Java Caching API)를 구현한 캐시 매니저입니다. 다양한 JCache 구현체를 사용할 수 있게 해줍니다.</LiDescription>
+
+- **NoOpCacheManager**<br />
+<LiDescription>아무 동작도 하지 않는 캐시 매니저입니다. 캐시를 사용하지 않으려는 경우에 사용됩니다.</LiDescription>
+
+- **SimpleCacheManager**<br />
+<LiDescription>간단한 캐시 매니저로, 프로그래밍 방식으로 캐시 인스턴스를 설정할 수 있습니다.</LiDescription>
+  <LiDescription>(수동으로 캐시를 구성할 수 있으며, 테스트나 간단한 사용 사례에 적합합니다.)</LiDescription>
+
+- **TransactionAwareCacheManagerProxy**<br />
+<LiDescription>기존의 캐시 매니저에 트랜잭션 인식 기능을 추가하는 프록시 캐시 매니저입니다.</LiDescription>
 
 
 ## 프로젝트 캐시매니저 설정 추가

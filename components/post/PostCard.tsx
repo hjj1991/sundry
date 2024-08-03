@@ -11,7 +11,7 @@ import { CalendarRange } from 'lucide-react';
 import Image from "next/image";
 
 export function PostCard({ postData }: { postData: PostData }) {
-    const thumbnailPath = postData.thumbnail ? doubleDecodeUriComponent(postData.thumbnail).replace(/\+/g, ' ') : "/posts/default_thumbnail.jpg";
+    const thumbnailPath = postData.thumbnail ? doubleDecodeUriComponent(postData.thumbnail) : "/posts/default_thumbnail.jpg";
 
     return (
         <Card className={cn("w-[380px] h-[460px]")}>
