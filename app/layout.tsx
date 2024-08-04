@@ -26,7 +26,7 @@ export default function RootLayout({children}: Readonly<{
         <Header/>
         {/* main page */}
         <Providers>
-            <main className="flex-1 pt-24 px-4 sm:px-8">
+            <main className="flex-1 pt-24">
                 {children}
             </main>
         </Providers>

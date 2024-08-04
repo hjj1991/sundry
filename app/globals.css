@@ -137,9 +137,6 @@
   body {
     @apply bg-background text-foreground flex flex-col min-h-screen;
   }
-  main {
-    @apply flex-1 pt-24 px-4 sm:px-8;
-  }
 }
 
 code {

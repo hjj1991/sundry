@@ -24,6 +24,13 @@ export function formatDate(dateString: string): string {
 }
 
 
+export function encodeUriComponentSafe(str: string): string {
+  return encodeURIComponent(str).replace(
+      /[!'()*]/g,
+      (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
+
 export function decodeUriComponentSafe(uriComponent: string): string {
   try {
     return decodeURIComponent(uriComponent);

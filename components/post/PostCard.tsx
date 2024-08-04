@@ -1,4 +1,4 @@
-import { cn, doubleDecodeUriComponent, formatDate } from "@/lib/utils";
+import {cn, doubleDecodeUriComponent, encodeUriComponentSafe, formatDate} from "@/lib/utils";
 import {
     Card,
     CardContent,
@@ -11,7 +11,7 @@ import { CalendarRange } from 'lucide-react';
 import Image from "next/image";
 
 export function PostCard({ postData }: { postData: PostData }) {
-    const thumbnailPath = postData.thumbnail ? doubleDecodeUriComponent(postData.thumbnail) : "/posts/default_thumbnail.jpg";
+    const thumbnailPath = postData.thumbnail ? postData.thumbnail : "/posts/default_thumbnail.jpg";
     console.log(thumbnailPath)
 
     return (

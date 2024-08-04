@@ -15,10 +15,6 @@ function getPostFiles(category?: string) {
     return paths;
 };
 
-export function encodeUriComponentSafe(str: string): string {
-    return encodeURIComponent(str).replace(/[!'()*]/g, escape);
-}
-
 // Function to get post data
 export async function getPostData(category: string, slug: string): Promise<PostData> {
     const filePath = path.join(postsDirectory, `${doubleDecodeUriComponent(path.join(category, slug))}`, 'content.mdx');
