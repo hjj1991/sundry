@@ -21,12 +21,7 @@ const mdxConfig = withMDX({
         remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
         rehypePlugins: [
             [
-                rehypeAutolinkHeadings,
-                {
-                    properties: {
-                        className: ['anchor'],
-                    },
-                },
+                [rehypeAutolinkHeadings, { behavior: 'append', properties: { className: 'toc-link' } }],
             ],
             [rehypePrettyCode]
         ]

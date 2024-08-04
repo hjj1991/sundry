@@ -150,9 +150,7 @@ code {
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
   padding: 1rem;
-  border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background-color: var(--background);
   margin-top: 0;
   position: relative; /* 라인 번호 절대 위치 설정을 위한 상대 위치 */
 }
@@ -163,12 +161,21 @@ code {
   font-weight: 600;
   padding: 0.6rem 1rem;
   border: 1px solid var(--border);
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
   border-bottom: none;
-  background-color: var(--card);
-  color: var(--foreground);
+  background-color: #fff8e1; /* 연한 베이지 배경색 */
+  color: #6d4c41; /* 짙은 베이지 텍스트 */
 }
+
+/* 코드 라인 번호 스타일 */
+[data-rehype-pretty-code-figure] pre code {
+  display: flex;
+  position: relative;
+  padding-left: 3rem; /* 라인 번호를 위한 패딩 */
+  color: #6d4c41; /* 짙은 베이지 색상으로 코드 텍스트 색상 설정 */
+}
+
 
 /* 다크 모드에서의 코드 블록 스타일 */
 .dark [data-rehype-pretty-code-figure] pre {
@@ -203,13 +210,6 @@ code {
 
 .dark [data-rehype-pretty-code-figure] .token.number {
   color: #b5cea8; /* 숫자 색상 */
-}
-
-/* 코드 라인 번호 스타일 */
-[data-rehype-pretty-code-figure] pre code {
-  display: flex;
-  position: relative;
-  padding-left: 3rem; /* 라인 번호를 위한 패딩 */
 }
 
 code > [data-line]::before {
