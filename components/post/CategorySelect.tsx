@@ -6,9 +6,10 @@ import { useState } from 'react';
 
 export default function CategorySelect({ selectedCategory, categories }: { selectedCategory?: string, categories: string[] }) {
     const router = useRouter();
-    const [isSelectFocused, setIsSelectFocused] = useState(false);
+    const [isSelectOpen, setIsSelectOpen] = useState(false);
 
     const handleSelectChange = (value: string) => {
+        setIsSelectOpen(false);
         if (value === 'ALL') {
             router.push('/posts');
         } else {
@@ -19,13 +20,12 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
     const selectCategory = selectedCategory ? decodeURIComponent(selectedCategory.replace(/\+/g, ' ')) : 'ALL';
 
     return (
-        <div 
-            className="mb-8" 
-            style={{ pointerEvents: isSelectFocused ? 'none' : 'auto' }} 
-            onPointerEnter={() => setIsSelectFocused(true)} 
-            onPointerLeave={() => setIsSelectFocused(false)}
-        >
-            <Select value={selectCategory} onValueChange={handleSelectChange}>
+        <div className="mb-8" onClick={() => setIsSelectOpen(true)}>
+            <Select
+                value={selectCategory}
+                onValueChange={handleSelectChange}
+                onOpenChange={(open) => setIsSelectOpen(open)}
+            >
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="전체" />
                 </SelectTrigger>
@@ -36,6 +36,13 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
                     ))}
                 </SelectContent>
             </Select>
+            {/* 모달이 열려 있을 때 다른 요소 클릭 방지 */}
+            {isSelectOpen && (
+                <div
+                    className="fixed inset-0 bg-transparent"
+                    onClick={() => setIsSelectOpen(false)}
+                />
+            )}
         </div>
     );
 }
