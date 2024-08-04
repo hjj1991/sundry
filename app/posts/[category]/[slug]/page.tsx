@@ -1,8 +1,8 @@
-import { Metadata, ResolvingMetadata } from 'next';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { useMDXComponents } from '@/app/mdx-components';
-import { getAllSlugIds, getPostData } from '@/lib/posts';
-import { cn, decodeUriComponentSafe, doubleDecodeUriComponent, formatDate, getMetadata } from '@/lib/utils';
+import {Metadata, ResolvingMetadata} from 'next';
+import {MDXRemote} from 'next-mdx-remote/rsc';
+import {useMDXComponents} from '@/app/mdx-components';
+import {getAllSlugIds, getPostData} from '@/lib/posts';
+import {cn, decodeUriComponentSafe, doubleDecodeUriComponent, formatDate, getMetadata} from '@/lib/utils';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import remarkGfm from 'remark-gfm';
@@ -25,15 +25,15 @@ export async function generateStaticParams() {
     return paths;
 }
 
-export async function generateMetadata({ params, searchParams }: Params, parent: ResolvingMetadata): Promise<Metadata> {
-    const { title, description, thumbnail } = await getPostData(params.category, params.slug);
+export async function generateMetadata({params, searchParams}: Params, parent: ResolvingMetadata): Promise<Metadata> {
+    const {title, description, thumbnail} = await getPostData(params.category, params.slug);
     const thumbnailPath = thumbnail ? doubleDecodeUriComponent(thumbnail) : '/posts/default_thumbnail.jpg';
     const asPath = decodeUriComponentSafe(`/posts/${params.category}/${params.slug}`);
-    return getMetadata({ title: title, description: description, ogImage: thumbnailPath, asPath: asPath });
+    return getMetadata({title: title, description: description, ogImage: thumbnailPath, asPath: asPath});
 }
 
-export default async function Post({ params }: Params) {
-    const { title, description, date, category, source } = await getPostData(params.category, params.slug);
+export default async function Post({params}: Params) {
+    const {title, description, date, category, source} = await getPostData(params.category, params.slug);
     const components = useMDXComponents();
     const rehypeOptions = {
         theme: 'one-light', // 밝은 배경을 사용하는 테마
@@ -50,18 +50,18 @@ export default async function Post({ params }: Params) {
                             href={linkUrl}
                             className="relative inline-flex items-center text-3xl font-extrabold text-orange-500 dark:text-orange-300 hover:text-lime-500 dark:hover:text-lime-400 transition duration-300 ease-in-out"
                         >
-                            <Tag className="mr-2" /> {/* Icon with margin to the right */}
+                            <Tag className="mr-2"/> {/* Icon with margin to the right */}
                             <span className="text-center">{category}</span> {/* Span to ensure text is clickable */}
                         </Link>
                     </div>
                     <div className="flex justify-center items-center">
-                        <CalendarRange className="mr-2" />
+                        <CalendarRange className="mr-2"/>
                         <p>{formatDate(date)}</p>
                     </div>
                 </div>
             </div>
-            <hr className="border-2 border-dotted my-8 border-amber-400" />
-            <CustomTOC title="목차" /> {/* 사용자 정의 TOC 컴포넌트 추가 */}
+            <hr className="border-2 border-dotted my-8 border-amber-400"/>
+            <CustomTOC title="목차"/> {/* 사용자 정의 TOC 컴포넌트 추가 */}
             <MDXRemote
                 source={source}
                 components={components}
@@ -71,7 +71,7 @@ export default async function Post({ params }: Params) {
                         // @ts-ignore
                         remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
                         rehypePlugins: [
-                            [rehypeAutolinkHeadings, { behavior: 'append', properties: { className: 'toc-link' } }],
+                            [rehypeAutolinkHeadings, {behavior: 'append', properties: {className: 'toc-link'}}],
                             [rehypePrettyCode, rehypeOptions]
                         ]
                     }
