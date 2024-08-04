@@ -77,11 +77,6 @@ export const getMetadata = (metadataProps?: GenerateMetadataProps) => {
         url: OG_IMAGE,
       },
     },
-    verification: {
-      other:{
-        'naver-site-verification':'30269204ac0ff12915db3c613144b4b38f385a06'
-      }
-    },
   };
 
   return metadata;

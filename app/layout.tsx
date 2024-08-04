@@ -9,6 +9,7 @@ import Footer from "@/components/ui/footer";
 export const metadata: Metadata = {
     title: META.title,
     description: META.description,
+    verification: META.verification
 };
 
 export const viewport: Viewport = {
