@@ -29,7 +29,7 @@ export function useMDXComponents(): MDXComponents {
         },
         h2: (props) => {
             return <h2
-                className={cn("text-4xl font-bold my-8 scroll-mt-16 dark:text-white", props.className)} {...props} />;
+                className={cn("text-4xl font-bold my-8 scroll-mt-20 dark:text-white", props.className)} {...props} />;
         },
         p: ({children}) => (
             <p className="my-6 text-slate-500 dark:text-slate-400">
