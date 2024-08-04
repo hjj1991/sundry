@@ -1,24 +1,30 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCallback } from 'react'
+import { useRouter } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
 
 export default function CategorySelect({ selectedCategory, categories }: { selectedCategory?: string, categories: string[] }) {
-    const router = useRouter()
+    const router = useRouter();
+    const [isSelectFocused, setIsSelectFocused] = useState(false);
 
-    const handleSelectChange = useCallback((value: string) => {
+    const handleSelectChange = (value: string) => {
         if (value === 'ALL') {
-            router.push('/posts')
+            router.push('/posts');
         } else {
-            router.push(`/posts/${value}`)
+            router.push(`/posts/${value}`);
         }
-    }, [router])
+    };
 
-    const selectCategory = selectedCategory ? decodeURIComponent(selectedCategory.replace(/\+/g, ' ')) : 'ALL'
+    const selectCategory = selectedCategory ? decodeURIComponent(selectedCategory.replace(/\+/g, ' ')) : 'ALL';
 
     return (
-        <div className="mb-8">
+        <div 
+            className="mb-8" 
+            style={{ pointerEvents: isSelectFocused ? 'none' : 'auto' }} 
+            onPointerEnter={() => setIsSelectFocused(true)} 
+            onPointerLeave={() => setIsSelectFocused(false)}
+        >
             <Select value={selectCategory} onValueChange={handleSelectChange}>
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="전체" />
@@ -31,5 +37,5 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
                 </SelectContent>
             </Select>
         </div>
-    )
+    );
 }
