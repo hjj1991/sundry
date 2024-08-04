@@ -85,6 +85,12 @@ const config = {
       },
     },
   },
+  variants: {
+    extend: {
+      // 스크롤 마진에 대한 변형을 추가
+      scrollMargin: ['responsive'],
+    },
+  },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
 

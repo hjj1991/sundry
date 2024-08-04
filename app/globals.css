@@ -21,6 +21,12 @@
   li > p {
     @apply inline;
   }
+
+  footer {
+    @apply py-4 px-6 text-center;
+    background-color: var(--footer-background);
+    color: var(--footer-foreground);
+  }
 }
 
 @layer base {
@@ -54,6 +60,9 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    --footer-background: #f8f9fa; /* 기본 푸터 배경색 */
+    --footer-foreground: #343a40; /* 기본 푸터 텍스트 색상 */
   }
 
   .dark {
@@ -84,6 +93,9 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    --footer-background: #343a40; /* 다크 모드 푸터 배경색 */
+    --footer-foreground: #f8f9fa; /* 다크 모드 푸터 텍스트 색상 */
   }
 
   /* mobile only */
@@ -92,7 +104,7 @@
       display: none;
     }
     .res_tbl_wrap table tbody tr {
-      border-bottom: 1px solid #efefef;
+      border-bottom: 1px solid var(--border);
     }
     .res_tbl_wrap table tbody tr td {
       width: 100%;
@@ -123,7 +135,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground flex flex-col min-h-screen;
+  }
+  main {
+    @apply flex-1 pt-24 px-4 sm:px-8;
   }
 }
 
@@ -135,9 +150,9 @@ code {
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
   padding: 1rem;
-  border: 1px solid #e1e4e8; /* One Light 색상 */
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background-color: #fafbfc; /* 밝은 배경색 */
+  background-color: var(--background);
   margin-top: 0;
   position: relative; /* 라인 번호 절대 위치 설정을 위한 상대 위치 */
 }
@@ -147,12 +162,12 @@ code {
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.6rem 1rem;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border);
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
   border-bottom: none;
-  background-color: #f1f3f5; /* 제목 배경색 */
-  color: #24292e; /* 제목 텍스트 색상 */
+  background-color: var(--card);
+  color: var(--foreground);
 }
 
 /* 다크 모드에서의 코드 블록 스타일 */
@@ -204,8 +219,8 @@ code > [data-line]::before {
   width: 2.5rem; /* 라인 번호 너비 조정 */
   margin-right: 1rem;
   text-align: right;
-  color: #6a737d; /* 연한 회색 */
-  background: #fafbfc; /* 코드 배경과 같은 색상 */
+  color: var(--muted-foreground);
+  background: var(--background);
   border-radius: 0.3rem;
   padding: 0.2rem 0.5rem;
   position: absolute; /* 절대 위치 지정 */
@@ -214,10 +229,10 @@ code > [data-line]::before {
 
 /* 코드 블록 내 링크 스타일 */
 [data-rehype-pretty-code-figure] a {
-  color: #0366d6; /* 링크 색상 */
+  color: var(--primary);
   text-decoration: underline; /* 밑줄 추가 */
 }
 
 [data-rehype-pretty-code-figure] a:hover {
-  color: #0056b3; /* 링크 hover 색상 */
+  color: var(--primary-foreground); /* 링크 hover 색상 */
 }

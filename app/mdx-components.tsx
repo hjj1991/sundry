@@ -26,8 +26,13 @@ const LiDescription = ({ children }: { children: ReactNode }) => {
 export function useMDXComponents(): MDXComponents {
     return {
         // Allows customizing built-in components, e.g. to add styling.
-        h1: ({ children }) => <h1 className={cn("text-6xl fonts-bold my-8")}>{children}</h1>,
-        h2: ({ children }) => <h2 className={cn("text-4xl fonts-bold my-8")}>{children}</h2>,
+        h1: (props) => {
+            // 기존 스타일에 추가 스타일을 병합
+            return <h1 className={cn("text-6xl fonts-bold my-8 scroll-margin-top-16", props.className)} {...props} />;
+        },
+        h2: (props) => {
+            return <h2 className={cn("text-4xl fonts-bold my-8 scroll-mt-16", props.className)} {...props} />;
+        },
         p: ({ children }) => (
             <p className="my-6 text-slate-500">
                 {React.Children.map(children, (child) => {
@@ -40,8 +45,11 @@ export function useMDXComponents(): MDXComponents {
                 })}
             </p>
         ),
+        ul: (props) => (
+            <ul className={cn('list-disc list-inside my-4 pl-5 text-gray-700 bg-gray-100 rounded-lg p-4', props.className)} {...props} />
+        ),
         li: ({ children }) => (
-            <li className={cn('my-4 text-gray-800 relative pl-6 bg-gradient-to-r from-yellow-100 to-red-100 border-l-4 border-yellow-500 rounded-lg p-4 shadow-md')}>
+            <li className={cn('my-4 text-gray-800 relative pl-6')}>
                 {React.Children.map(children, (child) => {
                     if (React.isValidElement(child) && child.type === 'code') {
                         return React.cloneElement(child as React.ReactElement, {
@@ -53,7 +61,7 @@ export function useMDXComponents(): MDXComponents {
             </li>
         ),
         strong: ({children}) => (
-            <strong className={cn('font-semibold text-slate-700')}>
+            <strong className={cn('font-semibold text-slate-700 break-words')}>
                 {children}
             </strong>
         ),

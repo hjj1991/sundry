@@ -74,3 +74,19 @@ export const getMetadata = (metadataProps?: GenerateMetadataProps) => {
 
   return metadata;
 };
+
+export function getHeadingsFromHTML(html: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const headings: Array<{ id: string; text: string }> = [];
+
+  doc.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading) => {
+    const id = heading.id;
+    const text = heading.textContent || '';
+    if (id) {
+      headings.push({ id, text });
+    }
+  });
+
+  return headings;
+}

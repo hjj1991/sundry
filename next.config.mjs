@@ -1,20 +1,36 @@
-import remarkGfm from 'remark-gfm'
-import createMDX from '@next/mdx'
+import withMDX from '@next/mdx';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import remarkToc from "remark-toc";
+import remarkGfm from "remark-gfm";
+import rehypePrettyCode from "rehype-pretty-code";
+import remarkSlug from "remark-slug";
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configure `pageExtensions`` to include MDX files
-    pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-    // Optionally, add any other Next.js config below
-}
-
-const withMDX = createMDX({
-    // Add markdown plugins here, as desired
-    options: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeAutolinkHeadings, rehypePrism],
+    output: 'standalone',
+    // 다른 설정들
+    env: {
+        API_SERVER_HOST: process.env.API_SERVER_HOST,
     },
-})
+    // 마크다운 및 MDX 파일을 포함시키기 위해 페이지 확장자 설정
+    pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+};
 
-// Wrap MDX and Next.js config with each other
-export default withMDX(nextConfig)
+const mdxConfig = withMDX({
+    extension: /\.mdx?$/,
+    options: {
+        remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
+        rehypePlugins: [
+            [
+                rehypeAutolinkHeadings,
+                {
+                    properties: {
+                        className: ['anchor'],
+                    },
+                },
+            ],
+            [rehypePrettyCode]
+        ]
+    },
+})(nextConfig);
+
+export default mdxConfig;
