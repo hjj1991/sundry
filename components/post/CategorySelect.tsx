@@ -20,29 +20,29 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
     const selectCategory = selectedCategory ? decodeURIComponent(selectedCategory.replace(/\+/g, ' ')) : 'ALL';
 
     return (
-        <div className="mb-8" onClick={() => setIsSelectOpen(true)}>
-            <Select
-                value={selectCategory}
-                onValueChange={handleSelectChange}
-                onOpenChange={(open) => setIsSelectOpen(open)}
+        <div className="mb-8 relative">
+            {/* 이 div는 Select가 열려 있을 때만 나타나며 클릭을 방지합니다 */}
+            {isSelectOpen && (
+                <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsSelectOpen(false)}
+                />
+            )}
+            <Select 
+                value={selectCategory} 
+                onValueChange={handleSelectChange} 
+                onOpenChange={setIsSelectOpen}
             >
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="전체" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50">
                     <SelectItem value="ALL">전체</SelectItem>
                     {categories.map((category, index) => (
                         <SelectItem key={index} value={category}>{category}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>
-            {/* 모달이 열려 있을 때 다른 요소 클릭 방지 */}
-            {isSelectOpen && (
-                <div
-                    className="fixed inset-0 bg-transparent"
-                    onClick={() => setIsSelectOpen(false)}
-                />
-            )}
         </div>
     );
 }
