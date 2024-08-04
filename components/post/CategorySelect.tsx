@@ -21,11 +21,11 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
 
     return (
         <div className="mb-8 relative">
-            {/* 이 div는 Select가 열려 있을 때만 나타나며 클릭을 방지합니다 */}
+            {/* `Select` 박스가 열렸을 때 여백을 추가하여 클릭 충돌을 방지합니다 */}
             {isSelectOpen && (
                 <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setIsSelectOpen(false)}
+                    className="absolute inset-0 bg-transparent"
+                    style={{ margin: '20px' }} // 여백 추가
                 />
             )}
             <Select 
@@ -36,7 +36,7 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="전체" />
                 </SelectTrigger>
-                <SelectContent className="z-50">
+                <SelectContent className="mt-2">
                     <SelectItem value="ALL">전체</SelectItem>
                     {categories.map((category, index) => (
                         <SelectItem key={index} value={category}>{category}</SelectItem>
