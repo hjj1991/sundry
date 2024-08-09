@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
     ColumnDef,
@@ -12,11 +12,11 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
-import {useState} from "react";
+import {useCallback, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {CellContext} from "@tanstack/table-core";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 
 const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => [
     {
@@ -49,7 +49,7 @@ const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => 
     },
 ];
 
-const getFinancials = async ({queryKey}: { queryKey: [SearchParams] }): Promise<FinancialProductResponse> => {
+const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<FinancialProductResponse> => {
     const params = new URLSearchParams();
     Object.entries(queryKey[0]).forEach(([key, value]) => {
         if (Array.isArray(value)) {
@@ -58,45 +58,48 @@ const getFinancials = async ({queryKey}: { queryKey: [SearchParams] }): Promise<
             params.set(key, value);
         }
     });
+    params.set('page', pageParam.toString());
+    params.set('size', '20');
     const queryString = params.toString();
-    return await fetch(`${process.env.API_SERVER_HOST}/v1/financials?${queryString}`, {
+    const response = await fetch(`${process.env.API_SERVER_HOST}/v1/financials?${queryString}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
         },
         cache: "no-cache"
-    }).then((res) => res.json())
-}
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+};
 
 export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const pathname = usePathname();
     const {replace} = useRouter();
-    const {data, error, isSuccess} = useQuery({
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        error,
+        isSuccess
+    } = useInfiniteQuery({
         queryKey: [searchParams],
-        queryFn: getFinancials,
+        queryFn: ({pageParam, queryKey}) => getFinancials(pageParam, queryKey),
+        initialPageParam: 0,
+        getPreviousPageParam: (firstPage) => firstPage.number > 0 ? firstPage.number - 1 : undefined,
+        getNextPageParam: (lastPage) => !lastPage.last ? lastPage.number + 1 : undefined,
     });
 
-    const [pagination, setPagination] = useState({
-        pageIndex: Number(searchParams.page || '0'),
-        pageSize: 20,
-    });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [sortColumn, setSortColumn] = useState<'baseInterestRate' | 'maximumInterestRate' | null>(null);
 
     const table = useReactTable({
-        data: data?.content || [],
+        data: data?.pages.flatMap(page => page.content) || [],
         columns: columns(searchParams.depositPeriodMonths || "0"),
-        state: {pagination, sorting},
-        onPaginationChange: (updater) => {
-            if (typeof updater !== "function") return;
-            const newPageInfo = updater(table.getState().pagination);
-            setPagination(newPageInfo);
-            const params = new URLSearchParams(searchParams);
-            params.set('page', newPageInfo.pageIndex.toString());
-            params.set('size', newPageInfo.pageSize.toString());
-            replace(`${pathname}?${params.toString()}`);
-        },
+        state: {sorting},
         onSortingChange: (updater) => {
             const newSortingInfo = updater instanceof Function ? updater(table.getState().sorting) : updater;
             setSorting(newSortingInfo);
@@ -111,10 +114,23 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
         manualSorting: true,
-        pageCount: data?.last === true ? 0 : -1 || -1,
+        pageCount: data?.pages.length || 0,
         autoResetPageIndex: false,
         enableMultiSort: true,
     });
+
+    const observer = useRef<IntersectionObserver | null>(null);
+
+    const lastRowRef = useCallback((node: HTMLTableRowElement) => {
+        if (isFetchingNextPage) return;
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting && hasNextPage) {
+                fetchNextPage();
+            }
+        }, {threshold: 0.1}); // Reduced threshold for larger screens
+        if (node) observer.current.observe(node);
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     const handleSort = (column: 'baseInterestRate' | 'maximumInterestRate') => {
         const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
@@ -203,7 +219,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
                     ))}
                 </TableHeader>
                 <TableBody className="block md:table-row-group">
-                    {table.getRowModel().rows?.length ? (
+                    {table.getRowModel().rows.length ? (
                         table.getRowModel().rows.map((row, rowIndex) => (
                             <TableRow
                                 key={row.id}
@@ -213,6 +229,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
                                 } hover:shadow-md transition-shadow duration-200 ${
                                     rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
                                 }`}
+                                ref={rowIndex === table.getRowModel().rows.length - 1 ? lastRowRef : null}
                             >
                                 {row.getVisibleCells().map((cell) => {
                                     return (
@@ -239,26 +256,6 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
                     )}
                 </TableBody>
             </Table>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    className="text-gray-500 dark:text-gray-300"
-                >
-                    Previous
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                    className="text-gray-500 dark:text-gray-300"
-                >
-                    Next
-                </Button>
-            </div>
         </div>
-    )
+    );
 }
