@@ -70,6 +70,7 @@ export const getMetadata = (metadataProps?: GenerateMetadataProps) => {
         url: OG_IMAGE,
       },
     },
+    icons: META.icons,
     twitter: {
       title: TITLE,
       description: DESCRIPTION,

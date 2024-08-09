@@ -1,16 +1,12 @@
 import type {Metadata, Viewport} from "next";
 import "./globals.css";
 import Header from "@/components/ui/header";
-import {cn} from "@/lib/utils";
+import {cn, getMetadata} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
 import {META} from "@/constants/metadata";
 import Footer from "@/components/ui/footer";
 
-export const metadata: Metadata = {
-    title: META.title,
-    description: META.description,
-    verification: META.verification
-};
+export const metadata = getMetadata();
 
 export const viewport: Viewport = {
     width: 'device-width',

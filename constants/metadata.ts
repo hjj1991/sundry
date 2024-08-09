@@ -16,9 +16,10 @@ export const META = {
         '일상',
     ],
     url: 'https://sundry.ninja',
-    // googleVerification: 'xxx',
-    // naverVerification: 'xxx',
-    ogImage: '/opengraph-image.jpg',
+    icons: {
+        icon: '/favicon.png',
+    },
+    ogImage: '/favicon.png',
     verification: {
         other:{
             'naver-site-verification':'30269204ac0ff12915db3c613144b4b38f385a06'

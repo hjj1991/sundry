@@ -1,15 +1,29 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState } from 'react';
 
 export default function CategorySelect({ selectedCategory, categories }: { selectedCategory?: string, categories: string[] }) {
     const router = useRouter();
-    const [isSelectOpen, setIsSelectOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [delayedOpen, setDelayedOpen] = useState(false);
+
+    const handleOpenChange = (
+        newOpenState: boolean | ((prevState: boolean) => boolean)
+    ) => {
+        if (newOpenState) {
+            setOpen(newOpenState);
+            setDelayedOpen(newOpenState);
+        } else {
+            setOpen(newOpenState);
+            setTimeout(() => {
+                setDelayedOpen(newOpenState);
+            }, 100);
+        }
+    };
 
     const handleSelectChange = (value: string) => {
-        setIsSelectOpen(false);
         if (value === 'ALL') {
             router.push('/posts');
         } else {
@@ -21,17 +35,11 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
 
     return (
         <div className="mb-8 relative">
-            {/* `Select` 박스가 열렸을 때 여백을 추가하여 클릭 충돌을 방지합니다 */}
-            {isSelectOpen && (
-                <div 
-                    className="absolute inset-0 bg-transparent"
-                    style={{ margin: '20px' }} // 여백 추가
-                />
-            )}
-            <Select 
-                value={selectCategory} 
-                onValueChange={handleSelectChange} 
-                onOpenChange={setIsSelectOpen}
+            <Select
+                value={selectCategory}
+                onValueChange={handleSelectChange}
+                open={delayedOpen}
+                onOpenChange={handleOpenChange}
             >
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="전체" />
