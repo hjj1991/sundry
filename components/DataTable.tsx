@@ -12,7 +12,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
-import {Key, useCallback, useRef, useState} from "react";
+import {Key, useCallback, useRef, useState, useEffect} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {useInfiniteQuery} from "@tanstack/react-query";
@@ -147,10 +147,10 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
                             <TableCell key={cell.id}
                                        data-label={cell.column.columnDef.header}
                                        className="block md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
-                                            <span
-                                                className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
-                                                {cell.column.columnDef.header as string}
-                                            </span>
+                                <span
+                                    className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
+                                    {cell.column.columnDef.header as string}
+                                </span>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
                         )
@@ -159,7 +159,8 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
             ))
         ) : (
             <TableRow>
-                <TableCell className="h-24 text-center text-gray-500 dark:text-gray-400">
+                <TableCell colSpan={4} // 열 수에 맞게 조정
+                           className="h-24 text-center text-gray-500 dark:text-gray-400">
                     결과가 없습니다.
                 </TableCell>
             </TableRow>
@@ -170,7 +171,7 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
 // DataTable Component
 export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const pathname = usePathname();
-    const {replace} = useRouter();
+    const {push} = useRouter();
     const {
         data,
         fetchNextPage,
@@ -202,7 +203,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             newSortingInfo.forEach(sort => {
                 params.append('sort', `${sort.id},${sort.desc ? 'desc' : 'asc'}`);
             });
-            replace(`${pathname}?${params.toString()}`);
+            push(`${pathname}?${params.toString()}`);
         },
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -233,7 +234,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         const params = new URLSearchParams(searchParams);
         params.delete('sort');
         params.set('sort', `${column},${newOrder}`);
-        replace(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`);
     };
 
     const handleResetSort = () => {
@@ -241,7 +242,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         setSortOrder('asc');
         const params = new URLSearchParams(searchParams);
         params.delete('sort');
-        replace(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`);
     };
 
     if (isLoading) {

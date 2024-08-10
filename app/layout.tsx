@@ -4,6 +4,7 @@ import Header from "@/components/ui/header";
 import {cn, getMetadata} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
 import Footer from "@/components/ui/footer";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 
 export const metadata = getMetadata();
 
@@ -32,6 +33,7 @@ export default function RootLayout({children}: Readonly<{
             </main>
         </Providers>
         <Footer/>
+        <ScrollToTopButton />
         </body>
         </html>
     );

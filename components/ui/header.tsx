@@ -31,9 +31,9 @@ export default function Header() {
                     onClick={toggleSidebar}
                     className={`hover:${isDarkMode ? 'bg-yellow-500' : 'bg-yellow-300'} mr-4 cursor-pointer transition-colors`}
                 />
-                <h1 className="text-xl font-bold">
+                <div className="text-xl font-bold">
                     <Link href="/">잡다창고</Link>
-                </h1>
+                </div>
                 <button onClick={toggleDarkMode} className="ml-auto p-2 transition-colors">
                     {isDarkMode ? <Sun className="w-6 h-6 text-yellow-500"/> :
                         <Moon className="w-6 h-6 text-gray-600"/>}
