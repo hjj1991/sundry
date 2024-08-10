@@ -13,7 +13,7 @@ function getPostFiles(category?: string) {
     const folder = category? doubleDecodeUriComponent(category) : '**';
     const paths: string[] = sync(`${postsDirectory}/${folder}/**/*.mdx`);
     return paths;
-};
+}
 
 // Function to get post data
 export async function getPostData(category: string, slug: string): Promise<PostData> {

@@ -59,6 +59,7 @@
     "eslint-config-next": "^14.2.5",
     "license-report": "^6.5.0",
     "postcss": "^8.4.40",
+    "prettier": "^3.3.3",
     "tailwindcss": "^3.4.7",
     "typescript": "^5"
   }

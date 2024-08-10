@@ -18,6 +18,9 @@ export default function SearchField() {
     const [selectType, setSelectType] = React.useState("ALL");
     const [inputValue, setInputValue] = React.useState("");
 
+    // 현재 스크롤 위치를 저장하고 복원하는 ref
+    const scrollPositionRef = React.useRef(0);
+
     React.useEffect(() => {
         setFinancialGroupType(searchParams.get("financialGroupType") || "ALL");
         setDepositPeriodMonths(searchParams.get("depositPeriodMonths") || "ALL");
@@ -32,6 +35,9 @@ export default function SearchField() {
         } else {
             setSelectType("");
         }
+
+        // 스크롤 위치 복원
+        window.scrollTo(0, scrollPositionRef.current);
     }, [searchParams]);
 
     const debouncedHandleSearch = useDebouncedCallback((inputValue: string) => {
@@ -64,6 +70,11 @@ export default function SearchField() {
         setInputValue("");
     }
 
+    function handleFilterChange() {
+        // 스크롤 위치 저장
+        scrollPositionRef.current = window.scrollY;
+    }
+
     return (
         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
@@ -71,7 +82,10 @@ export default function SearchField() {
                     <label className="text-gray-700 dark:text-gray-300 font-medium">금융 그룹</label>
                     <div className="flex flex-wrap gap-2">
                         <ToggleGroup type="single" value={financialGroupType}
-                                     onValueChange={(value) => handleToggleChange('financialGroupType', value)}>
+                                     onValueChange={(value) => {
+                                         handleToggleChange('financialGroupType', value);
+                                         handleFilterChange();
+                                     }}>
                             <ToggleGroupItem value="ALL"
                                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 전체
@@ -91,7 +105,10 @@ export default function SearchField() {
                     <label className="text-gray-700 dark:text-gray-300 font-medium">예치 기간</label>
                     <div className="flex flex-wrap gap-2">
                         <ToggleGroup type="single" value={depositPeriodMonths}
-                                     onValueChange={(value) => handleToggleChange('depositPeriodMonths', value)}>
+                                     onValueChange={(value) => {
+                                         handleToggleChange('depositPeriodMonths', value);
+                                         handleFilterChange();
+                                     }}>
                             <ToggleGroupItem value="ALL"
                                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 전체
@@ -121,7 +138,10 @@ export default function SearchField() {
                     <label className="text-gray-700 dark:text-gray-300 font-medium">가입 제한</label>
                     <div className="flex flex-wrap gap-2">
                         <ToggleGroup type="single" value={joinRestriction}
-                                     onValueChange={(value) => handleToggleChange('joinRestriction', value)}>
+                                     onValueChange={(value) => {
+                                         handleToggleChange('joinRestriction', value);
+                                         handleFilterChange();
+                                     }}>
                             <ToggleGroupItem value="ALL"
                                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 전체
@@ -145,7 +165,10 @@ export default function SearchField() {
                     <label className="text-gray-700 dark:text-gray-300 font-medium">금융 상품 유형</label>
                     <div className="flex flex-wrap gap-2">
                         <ToggleGroup type="single" value={financialProductType}
-                                     onValueChange={(value) => handleToggleChange('financialProductType', value)}>
+                                     onValueChange={(value) => {
+                                         handleToggleChange('financialProductType', value);
+                                         handleFilterChange();
+                                     }}>
                             <ToggleGroupItem value="ALL"
                                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 전체
@@ -163,7 +186,10 @@ export default function SearchField() {
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <Select value={selectType} onValueChange={handleSelectChange}>
+                <Select value={selectType} onValueChange={(value) => {
+                    handleSelectChange(value);
+                    handleFilterChange();
+                }}>
                     <SelectTrigger
                         className="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md">
                         <SelectValue placeholder="검색조건"/>

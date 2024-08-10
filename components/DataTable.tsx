@@ -12,12 +12,13 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
-import {useCallback, useRef, useState} from "react";
+import {Key, useCallback, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
-import {CellContext} from "@tanstack/table-core";
 import {useInfiniteQuery} from "@tanstack/react-query";
+import {CellContext} from "@tanstack/table-core";
 
+// Columns Configuration
 const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => [
     {
         accessorKey: "financialCompany.companyName",
@@ -49,6 +50,7 @@ const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => 
     },
 ];
 
+// Fetch Financial Data
 const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<FinancialProductResponse> => {
     const params = new URLSearchParams();
     Object.entries(queryKey[0]).forEach(([key, value]) => {
@@ -74,6 +76,98 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
     return response.json();
 };
 
+// Loading Spinner Component
+const LoadingSpinner = () => (
+    <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-teal-500"></div>
+    </div>
+);
+
+// Error Component
+const ErrorComponent = ({message}: { message: string }) => (
+    <div className="p-4 text-center text-red-500 dark:text-red-400">
+        Error: {message}
+    </div>
+);
+
+// TableHeader Component
+const TableHeaderComponent = ({table, sortColumn, sortOrder, handleSort}: any) => (
+    <TableHeader className="hidden md:table-header-group">
+        {table.getHeaderGroups().map((headerGroup: { id: Key | null | undefined; headers: any[]; }) => (
+            <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header: any) => {
+                    const isSorted = header.column.getIsSorted();
+                    return (
+                        <TableHead key={header.id} colSpan={header.colSpan}
+                                   className="bg-teal-100 dark:bg-teal-700 text-teal-700 dark:text-teal-300 border-b border-gray-300 dark:border-gray-600">
+                            {header.isPlaceholder ? null : (
+                                <div
+                                    className={header.column.getCanSort()
+                                        ? 'select-none cursor-pointer flex items-center gap-1'
+                                        : ''}
+                                    onClick={header.column.getToggleSortingHandler()}
+                                >
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext(),
+                                    ) as React.ReactNode}
+                                    {isSorted === 'asc' && (
+                                        <ArrowDown className="h-4 w-4 text-teal-700 dark:text-teal-300"/>
+                                    )}
+                                    {isSorted === 'desc' && (
+                                        <ArrowUp className="h-4 w-4 text-teal-700 dark:text-teal-300"/>
+                                    )}
+                                </div>
+                            )}
+                        </TableHead>
+                    )
+                })}
+            </TableRow>
+        ))}
+    </TableHeader>
+);
+
+// TableBody Component
+const TableBodyComponent = ({table, lastRowRef}: any) => (
+    <TableBody className="block md:table-row-group">
+        {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row: { id: Key | null | undefined; getIsSelected: () => any; getVisibleCells: () => any[]; }, rowIndex: number) => (
+                <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={`block md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm ${
+                        rowIndex % 2 === 0 ? 'bg-teal-50 dark:bg-teal-800' : 'bg-teal-100 dark:bg-teal-700'
+                    } hover:shadow-md transition-shadow duration-200 ${
+                        rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
+                    }`}
+                    ref={rowIndex === table.getRowModel().rows.length - 1 ? lastRowRef : null}
+                >
+                    {row.getVisibleCells().map((cell) => {
+                        return (
+                            <TableCell key={cell.id}
+                                       data-label={cell.column.columnDef.header}
+                                       className="block md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
+                                            <span
+                                                className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
+                                                {cell.column.columnDef.header as string}
+                                            </span>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                        )
+                    })}
+                </TableRow>
+            ))
+        ) : (
+            <TableRow>
+                <TableCell className="h-24 text-center text-gray-500 dark:text-gray-400">
+                    결과가 없습니다.
+                </TableCell>
+            </TableRow>
+        )}
+    </TableBody>
+);
+
+// DataTable Component
 export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const pathname = usePathname();
     const {replace} = useRouter();
@@ -83,7 +177,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         hasNextPage,
         isFetchingNextPage,
         error,
-        isSuccess
+        isLoading
     } = useInfiniteQuery({
         queryKey: [searchParams],
         queryFn: ({pageParam, queryKey}) => getFinancials(pageParam, queryKey),
@@ -128,7 +222,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             if (entry.isIntersecting && hasNextPage) {
                 fetchNextPage();
             }
-        }, {threshold: 0.1}); // Reduced threshold for larger screens
+        }, {threshold: 0.1});
         if (node) observer.current.observe(node);
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
@@ -150,16 +244,16 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         replace(`${pathname}?${params.toString()}`);
     };
 
-    if (!isSuccess) {
-        return <div className="p-4 text-center text-gray-500 dark:text-gray-400">Loading...</div>;
+    if (isLoading) {
+        return <LoadingSpinner/>;
     }
+
     if (error) {
-        return <div className="p-4 text-center text-red-500 dark:text-red-400">Error: {error}</div>;
+        return <ErrorComponent message={error.message}/>;
     }
 
     return (
         <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
-            {/* Sorting Buttons (Mobile only) */}
             <div className="block md:hidden mb-4">
                 <Button
                     variant="outline"
@@ -185,76 +279,9 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             </div>
 
             <Table className="w-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-md">
-                <TableHeader className="hidden md:table-header-group">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                const isSorted = header.column.getIsSorted();
-                                return (
-                                    <TableHead key={header.id} colSpan={header.colSpan}
-                                               className="bg-teal-100 dark:bg-teal-700 text-teal-700 dark:text-teal-300 border-b border-gray-300 dark:border-gray-600">
-                                        {header.isPlaceholder ? null : (
-                                            <div
-                                                className={header.column.getCanSort()
-                                                    ? 'select-none cursor-pointer flex items-center gap-1'
-                                                    : ''}
-                                                onClick={header.column.getToggleSortingHandler()}
-                                            >
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                ) as React.ReactNode}
-                                                {isSorted === 'asc' && (
-                                                    <ArrowDown className="h-4 w-4 text-teal-700 dark:text-teal-300"/>
-                                                )}
-                                                {isSorted === 'desc' && (
-                                                    <ArrowUp className="h-4 w-4 text-teal-700 dark:text-teal-300"/>
-                                                )}
-                                            </div>
-                                        )}
-                                    </TableHead>
-                                )
-                            })}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody className="block md:table-row-group">
-                    {table.getRowModel().rows.length ? (
-                        table.getRowModel().rows.map((row, rowIndex) => (
-                            <TableRow
-                                key={row.id}
-                                data-state={row.getIsSelected() && "selected"}
-                                className={`block md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm ${
-                                    rowIndex % 2 === 0 ? 'bg-teal-50 dark:bg-teal-800' : 'bg-teal-100 dark:bg-teal-700'
-                                } hover:shadow-md transition-shadow duration-200 ${
-                                    rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
-                                }`}
-                                ref={rowIndex === table.getRowModel().rows.length - 1 ? lastRowRef : null}
-                            >
-                                {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <TableCell key={cell.id}
-                                                   data-label={cell.column.columnDef.header}
-                                                   className="block md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
-                                            <span
-                                                className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
-                                                {cell.column.columnDef.header as string}
-                                            </span>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    )
-                                })}
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns(searchParams.depositPeriodMonths || "0").length}
-                                       className="h-24 text-center text-gray-500 dark:text-gray-400">
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
+                <TableHeaderComponent table={table} sortColumn={sortColumn} sortOrder={sortOrder}
+                                      handleSort={handleSort}/>
+                <TableBodyComponent table={table} lastRowRef={lastRowRef}/>
             </Table>
         </div>
     );

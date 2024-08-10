@@ -1,9 +1,8 @@
-import type {Metadata, Viewport} from "next";
+import type {Viewport} from "next";
 import "./globals.css";
 import Header from "@/components/ui/header";
 import {cn, getMetadata} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
-import {META} from "@/constants/metadata";
 import Footer from "@/components/ui/footer";
 
 export const metadata = getMetadata();

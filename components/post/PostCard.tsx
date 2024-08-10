@@ -8,7 +8,14 @@ import Image from "next/image";
 export function PostCard({ postData }: { postData: PostData }) {
     const thumbnailPath = postData.thumbnail ? postData.thumbnail : "/posts/default_thumbnail.jpg";
     return (
-        <Card className={cn("w-[380px] h-[460px] bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-700")}>
+        <Card
+            className={cn("h-[460px] bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-700 mx-2")}
+            style={{
+                width: "calc(100% - 20px)", // 모바일 사이즈에서 -20px 적용
+                maxWidth: "360px", // 최대 너비 설정
+                minWidth: "calc(100% - 20px)" // 380px보다 작은 경우 적용
+            }}
+        >
             <Link href={`/posts/${postData.id}`}>
                 <CardHeader className="relative h-64 w-full overflow-hidden p-2 rounded-lg">
                     <div className="relative h-full w-full rounded-lg overflow-hidden">
@@ -16,9 +23,9 @@ export function PostCard({ postData }: { postData: PostData }) {
                             src={thumbnailPath}
                             alt="썸네일"
                             fill
-                            style={{ objectFit: "contain" }} // objectFit prop 대체
+                            style={{ objectFit: "contain" }}
                             className="w-full h-full rounded-lg"
-                            priority={true} // LCP로 감지된 이미지에 priority 추가
+                            priority={true}
                         />
                     </div>
                 </CardHeader>
