@@ -141,3 +141,7 @@ export function getAllCategories(filter?: string): {allCategories: string[], sel
         selectedCategory: selectedCategory
     };
 }
+
+export async function getLatestPostsData(limit: number): Promise<PostData[]> {
+    return (await getSortedPostsData()).slice(0, limit);
+}

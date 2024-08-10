@@ -49,8 +49,8 @@
 
     --radius: 0.5rem;
 
-    --footer-background: #f8f9fa; /* 기본 푸터 배경색 */
-    --footer-foreground: #343a40; /* 기본 푸터 텍스트 색상 */
+    --footer-background: 210, 22%, 98%; /* 기본 푸터 배경색 */
+    --footer-foreground: 210, 14%, 25%; /* 기본 푸터 텍스트 색상 */
   }
 
   .dark {
@@ -82,8 +82,8 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
-    --footer-background: #343a40; /* 다크 모드 푸터 배경색 */
-    --footer-foreground: #f8f9fa; /* 다크 모드 푸터 텍스트 색상 */
+    --footer-background: 210, 14%, 25%; /* 다크 모드 푸터 배경색 */
+    --footer-foreground: 210, 22%, 98%; /* 다크 모드 푸터 텍스트 색상 */
   }
 
   * {
@@ -91,7 +91,7 @@
   }
 
   body {
-    @apply bg-background text-foreground flex flex-col min-h-screen;
+    @apply bg-background flex flex-col min-h-screen text-foreground;
   }
 }
 
@@ -101,9 +101,7 @@
   }
 
   footer {
-    @apply py-4 px-6 text-center;
-    background-color: var(--footer-background);
-    color: var(--footer-foreground);
+    @apply py-4 px-6 text-center bg-footerBackground text-footerForeground text-xs;
   }
 
   code {
@@ -198,5 +196,16 @@
 
   [data-rehype-pretty-code-figure] a:hover {
     color: var(--primary-foreground); /* 링크 hover 색상 */
+  }
+
+  /* 모바일 화면에서의 텍스트 크기 조절 */
+  @media (max-width: 640px) {
+    body {
+      @apply text-sm;
+    }
+
+    [data-rehype-pretty-code-title] {
+      font-size: 0.8rem; /* 코드 블록 제목의 글씨 크기를 작게 조정 */
+    }
   }
 }

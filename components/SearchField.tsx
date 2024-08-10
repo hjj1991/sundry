@@ -73,15 +73,15 @@ export default function SearchField() {
                         <ToggleGroup type="single" value={financialGroupType}
                                      onValueChange={(value) => handleToggleChange('financialGroupType', value)}>
                             <ToggleGroupItem value="ALL"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 전체
                             </ToggleGroupItem>
                             <ToggleGroupItem value="BANK"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 은행
                             </ToggleGroupItem>
                             <ToggleGroupItem value="SAVING_BANK"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 저축은행
                             </ToggleGroupItem>
                         </ToggleGroup>
@@ -93,23 +93,23 @@ export default function SearchField() {
                         <ToggleGroup type="single" value={depositPeriodMonths}
                                      onValueChange={(value) => handleToggleChange('depositPeriodMonths', value)}>
                             <ToggleGroupItem value="ALL"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 전체
                             </ToggleGroupItem>
                             <ToggleGroupItem value="6"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 6개월
                             </ToggleGroupItem>
                             <ToggleGroupItem value="12"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 12개월
                             </ToggleGroupItem>
                             <ToggleGroupItem value="24"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 24개월
                             </ToggleGroupItem>
                             <ToggleGroupItem value="36"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 36개월
                             </ToggleGroupItem>
                         </ToggleGroup>
@@ -123,19 +123,19 @@ export default function SearchField() {
                         <ToggleGroup type="single" value={joinRestriction}
                                      onValueChange={(value) => handleToggleChange('joinRestriction', value)}>
                             <ToggleGroupItem value="ALL"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 전체
                             </ToggleGroupItem>
                             <ToggleGroupItem value="NO_RESTRICTION"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 제한없음
                             </ToggleGroupItem>
                             <ToggleGroupItem value="LOW_INCOME_ONLY"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 서민전용
                             </ToggleGroupItem>
                             <ToggleGroupItem value="PARTIALLY_RESTRICTED"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 일부제한
                             </ToggleGroupItem>
                         </ToggleGroup>
@@ -147,15 +147,15 @@ export default function SearchField() {
                         <ToggleGroup type="single" value={financialProductType}
                                      onValueChange={(value) => handleToggleChange('financialProductType', value)}>
                             <ToggleGroupItem value="ALL"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 전체
                             </ToggleGroupItem>
                             <ToggleGroupItem value="SAVINGS"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 예금
                             </ToggleGroupItem>
                             <ToggleGroupItem value="INSTALLMENT_SAVINGS"
-                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                             className="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs">
                                 적금
                             </ToggleGroupItem>
                         </ToggleGroup>

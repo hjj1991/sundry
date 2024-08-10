@@ -135,7 +135,7 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
                 <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`block md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm ${
+                    className={`grid grid-cols-2 md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm ${
                         rowIndex % 2 === 0 ? 'bg-teal-50 dark:bg-teal-800' : 'bg-teal-100 dark:bg-teal-700'
                     } hover:shadow-md transition-shadow duration-200 ${
                         rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
@@ -146,12 +146,12 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
                         return (
                             <TableCell key={cell.id}
                                        data-label={cell.column.columnDef.header}
-                                       className="block md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
+                                       className="md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
                                 <span
                                     className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
                                     {cell.column.columnDef.header as string}
                                 </span>
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                <span className="max-md:text-xs">{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
                             </TableCell>
                         )
                     })}
@@ -254,26 +254,26 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
     }
 
     return (
-        <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
+        <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md max-sm:text-xs">
             <div className="block md:hidden mb-4">
                 <Button
                     variant="outline"
                     onClick={() => handleSort('baseInterestRate')}
-                    className={`mr-2 ${sortColumn === 'baseInterestRate' ? 'bg-teal-100 dark:bg-teal-700' : ''}`}
+                    className={`mr-2 max-sm:text-xs ${sortColumn === 'baseInterestRate' ? 'bg-teal-100 dark:bg-teal-700' : ''}`}
                 >
                     기본 이율 {sortColumn === 'baseInterestRate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
                 </Button>
                 <Button
                     variant="outline"
                     onClick={() => handleSort('maximumInterestRate')}
-                    className={`mr-2 ${sortColumn === 'maximumInterestRate' ? 'bg-teal-100 dark:bg-teal-700' : ''}`}
+                    className={`mr-2 max-sm:text-xs ${sortColumn === 'maximumInterestRate' ? 'bg-teal-100 dark:bg-teal-700' : ''}`}
                 >
                     최고 우대 이율 {sortColumn === 'maximumInterestRate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
                 </Button>
                 <Button
                     variant="outline"
                     onClick={handleResetSort}
-                    className="mt-2"
+                    className="mt-2 max-sm:text-xs"
                 >
                     정렬 초기화
                 </Button>

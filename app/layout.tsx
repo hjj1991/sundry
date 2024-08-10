@@ -20,7 +20,7 @@ export default function RootLayout({children}: Readonly<{
         <html lang="ko" className="font-jalnan">
         <body
             className={cn(
-                "bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100", // 기본 모드와 다크 모드 배경 및 텍스트 색상
+                "bg-white dark:bg-gray-900 dark:text-gray-100", // 기본 모드와 다크 모드 배경 및 텍스트 색상
                 {"debug-screens": process.env.NODE_ENV === "development"}
             )}
         >

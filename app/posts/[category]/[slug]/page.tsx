@@ -11,6 +11,8 @@ import Link from 'next/link';
 import remarkToc from "remark-toc";
 import remarkSlug from "remark-slug";
 import CustomTOC from "@/components/post/CustomTOC";
+import Giscus from "@/components/Giscus";
+import AuthorBio from "@/components/AuthorBio";
 
 interface Params {
     params: {
@@ -77,6 +79,9 @@ export default async function Post({params}: Params) {
                     }
                 }}
             />
+            <hr className="border-2 border-dotted my-8 border-amber-400"/>
+            <AuthorBio />
+            <Giscus/>
         </div>
     );
 }

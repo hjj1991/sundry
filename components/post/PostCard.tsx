@@ -1,11 +1,11 @@
-import { cn, formatDate } from "@/lib/utils";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { PostData } from "@/types/posts";
+import {cn, formatDate} from "@/lib/utils";
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import {PostData} from "@/types/posts";
 import Link from "next/link";
-import { CalendarRange } from 'lucide-react';
+import {CalendarRange} from 'lucide-react';
 import Image from "next/image";
 
-export function PostCard({ postData }: { postData: PostData }) {
+export function PostCard({postData}: { postData: PostData }) {
     const thumbnailPath = postData.thumbnail ? postData.thumbnail : "/posts/default_thumbnail.jpg";
     return (
         <Card
@@ -23,7 +23,7 @@ export function PostCard({ postData }: { postData: PostData }) {
                             src={thumbnailPath}
                             alt="썸네일"
                             fill
-                            style={{ objectFit: "contain" }}
+                            style={{objectFit: "contain"}}
                             className="w-full h-full rounded-lg"
                             priority={true}
                         />
@@ -40,7 +40,7 @@ export function PostCard({ postData }: { postData: PostData }) {
                     </div>
                 </CardContent>
                 <CardFooter className="flex space-x-2 text-neutral-500 dark:text-neutral-400">
-                    <CalendarRange /> <p>{formatDate(postData.date)}</p>
+                    <CalendarRange/> <p>{formatDate(postData.date)}</p>
                 </CardFooter>
             </Link>
         </Card>
