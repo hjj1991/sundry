@@ -5,6 +5,7 @@ import {cn, getMetadata} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
 import Footer from "@/components/ui/footer";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export const metadata = getMetadata();
 
@@ -35,6 +36,7 @@ export default function RootLayout({children}: Readonly<{
         <Footer/>
         <ScrollToTopButton />
         </body>
+        <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_CODE as string} />
         </html>
     );
 }
