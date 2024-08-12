@@ -1,9 +1,10 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FinancialProductResponse } from "@/types/financials";
+import {useQuery} from "@tanstack/react-query";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {FinancialProductResponse} from "@/types/financials";
 import Link from "next/link";
+import {List} from "lucide-react"; // lucide-react에서 List 아이콘을 가져옴
 
 // Fetch Financial Data
 const getFinancials = async (
@@ -39,7 +40,7 @@ const LoadingSpinner = () => (
 );
 
 // Error Component
-const ErrorComponent = ({ message }: { message: string }) => (
+const ErrorComponent = ({message}: { message: string }) => (
     <div className="p-4 text-center text-red-500 dark:text-red-400">
         Error: {message}
     </div>
@@ -51,21 +52,29 @@ export default function HomeFinancials({
                                        }: {
     financialProductType: string;
 }) {
-    const { data, error, isLoading } = useQuery({
+    const {data, error, isLoading} = useQuery({
         queryKey: [financialProductType],
-        queryFn: ({ queryKey }) => getFinancials(queryKey[0]),
+        queryFn: ({queryKey}) => getFinancials(queryKey[0]),
     });
 
     if (isLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinner/>;
     }
 
     if (error) {
-        return <ErrorComponent message={error.message} />;
+        return <ErrorComponent message={error.message}/>;
     }
 
     return (
         <div className="relative p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <Link
+                href={`/financials?depositPeriodMonths=12&page=0&financialProductType=${financialProductType}`}
+                className="absolute top-4 right-4 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+            >
+                <span className="hidden sm:inline">전체 목록</span>
+                <List className="sm:hidden w-5 h-5"/>
+            </Link>
+
             <div className="text-center mb-6">
                 <div className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-100">
                     {financialProductType === "INSTALLMENT_SAVINGS"
@@ -77,13 +86,6 @@ export default function HomeFinancials({
                     <span className="inline-block bg-green-100 text-green-800 py-1 px-2 rounded-md">최고 우대 이율 기준</span>
                 </div>
             </div>
-
-            <Link
-                href={`/financials?depositPeriodMonths=12&page=0&financialProductType=${financialProductType}`}
-                className="block md:absolute md:top-4 md:right-4 inline-flex items-center px-4 py-2 mb-4 md:mb-0 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition duration-150 ease-in-out"
-            >
-                전체 목록
-            </Link>
 
             <Table className="w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-md">
                 <TableHeader>
