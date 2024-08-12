@@ -1,7 +1,6 @@
-// components/LatestPosts.tsx
-import {PostData} from "@/types/posts";
+import { PostData } from "@/types/posts";
 import Link from "next/link";
-import {getLatestPostsData} from "@/lib/posts";
+import { getLatestPostsData } from "@/lib/posts";
 
 // LatestPosts component
 export default async function LatestPosts() {
@@ -17,18 +16,17 @@ export default async function LatestPosts() {
             <ul className="space-y-4">
                 {posts.map((post) => (
                     <li key={post.id}
-                        className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4">
+                        className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-gray-700 pb-4">
                         <Link href={`/posts/${post.id}`}
                               className="text-base font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
                             {post.title}
                         </Link>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(post.date).toLocaleDateString('ko-KR',
-                                {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                })}
+                        <span className="text-sm text-gray-500 dark:text-gray-400 mt-2 md:mt-0">
+                            {new Date(post.date).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                            })}
                         </span>
                     </li>
                 ))}
