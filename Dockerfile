@@ -17,12 +17,10 @@ COPY . .
 # Set build-time arguments
 ARG API_SERVER_HOST
 ARG GOOGLE_ANALYTICS_CODE
-ENV API_SERVER_HOST=${API_SERVER_HOST}
-ENV GOOGLE_ANALYTICS_CODE=${GOOGLE_ANALYTICS_CODE}
 
-# Replace values in .env.production file
-RUN sed -i 's/^API_SERVER_HOST=.*/API_SERVER_HOST=${API_SERVER_HOST}/' .env.production
-RUN sed -i 's/^GOOGLE_ANALYTICS_CODE=.*/GOOGLE_ANALYTICS_CODE=${GOOGLE_ANALYTICS_CODE}/' .env.production
+# Create .env.production file from build arguments
+RUN echo "API_SERVER_HOST=${API_SERVER_HOST}" > .env.production
+RUN echo "GOOGLE_ANALYTICS_CODE=${GOOGLE_ANALYTICS_CODE}" >> .env.production
 
 RUN npm run build
 
