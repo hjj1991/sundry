@@ -20,6 +20,10 @@ ARG GOOGLE_ANALYTICS_CODE
 ENV API_SERVER_HOST=${API_SERVER_HOST}
 ENV GOOGLE_ANALYTICS_CODE=${GOOGLE_ANALYTICS_CODE}
 
+# Replace values in .env.production file
+RUN sed -i 's/^API_SERVER_HOST=.*/API_SERVER_HOST=${API_SERVER_HOST}/' .env.production
+RUN sed -i 's/^GOOGLE_ANALYTICS_CODE=.*/GOOGLE_ANALYTICS_CODE=${GOOGLE_ANALYTICS_CODE}/' .env.production
+
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -41,4 +45,5 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+# Use the built-in Next.js server to start the app
+CMD ["npm", "start"]
