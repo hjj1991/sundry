@@ -45,5 +45,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-# Use the built-in Next.js server to start the app
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
