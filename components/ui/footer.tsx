@@ -21,6 +21,7 @@ export default function Footer() {
                         width={24}
                         height={24}
                         className="block dark:hidden" // 다크 모드가 아닐 때 표시
+                        priority
                     />
                     <Image
                         src="/common/github-mark-white.png" // 다크 모드일 때 사용할 이미지
@@ -28,6 +29,7 @@ export default function Footer() {
                         width={24}
                         height={24}
                         className="hidden dark:block" // 다크 모드일 때 표시
+                        priority
                     />
                 </a>
                 <a href="https://linkedin.com/in/재정-황-38ba49248" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">
