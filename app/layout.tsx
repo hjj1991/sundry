@@ -37,11 +37,11 @@ export default function RootLayout({children}: Readonly<{
         </Providers>
         <Footer/>
         <ScrollToTopButton/>
+        </ThemeProvider>
         {/* Google Analytics - Production 환경에서만 실행 */}
         {process.env.NODE_ENV === "production" && (
             <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_CODE as string}/>
         )}
-        </ThemeProvider>
         </body>
         </html>
     );
