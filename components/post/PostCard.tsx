@@ -25,7 +25,8 @@ export function PostCard({postData}: { postData: PostData }) {
                             fill
                             style={{objectFit: "contain"}}
                             className="w-full h-full rounded-lg"
-                            priority={true}
+                            priority
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     </div>
                 </CardHeader>

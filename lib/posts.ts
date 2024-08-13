@@ -105,8 +105,8 @@ export function getAllCategoryIds(category?: string) {
 
     return filePaths.map((filePath) => {
         // 전체 경로에서 "회고" 부분을 추출하기 위해 디렉토리 경로를 가져옵니다.
-        const dirPath = path.dirname(filePath); // /Users/hwangjaejeong/study/javascript/sundry/posts/회고/늦었지만 2024년에 써보는 2023년 회고
-        const parentDir = path.dirname(dirPath); // /Users/hwangjaejeong/study/javascript/sundry/posts/회고
+        const dirPath = path.dirname(filePath);
+        const parentDir = path.dirname(dirPath);
         const categoryDir = path.basename(parentDir); // 회고
         return {
             category: encodeURIComponent(categoryDir),
