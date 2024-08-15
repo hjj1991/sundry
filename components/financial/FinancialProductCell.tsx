@@ -12,10 +12,11 @@ export default function FinancialProductCell({ row, column, depositPeriodMonths 
     let matchingOption;
 
     if (depositPeriodMonths === '0') {
-        matchingOption = options.reduce((prev, current) =>
-                prev.financialProductOptionId > current.financialProductOptionId ? prev : current,
-            options[0]
-        );
+        matchingOption = options.reduce((prev, current) => {
+            const prevRate = prev.baseInterestRate ?? 0;
+            const currentRate = current.baseInterestRate ?? 0;
+            return prevRate > currentRate ? prev : current;
+        }, options[0]);
     } else {
         matchingOption = options.find(option => option.depositPeriodMonths === depositPeriodMonths);
     }
