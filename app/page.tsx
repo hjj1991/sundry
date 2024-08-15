@@ -1,4 +1,4 @@
-import HomeFinancials from "@/components/HomeFinancials";
+import HomeFinancials from "@/components/financial/HomeFinancials";
 import {dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query";
 import {getMetadata} from "@/lib/utils";
 import LatestPosts from "@/components/post/LatestPosts";

@@ -1,9 +1,9 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import React from "react";
 import PageTitle from "@/components/PageTitle";
-import SearchField from "@/components/SearchField";
+import SearchField from "@/components/financial/SearchField";
 import { SearchParams } from "@/types/financials";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@/components/financial/DataTable";
 import { getMetadata } from "@/lib/utils";
 
 const queryClient = new QueryClient();

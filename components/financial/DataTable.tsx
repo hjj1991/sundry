@@ -11,12 +11,13 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
-import FinancialProductCell from "@/components/FinancialProductCell";
+import FinancialProductCell from "@/components/financial/FinancialProductCell";
 import {Key, useCallback, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {CellContext} from "@tanstack/table-core";
+import {FinancialProductModal} from "@/components/financial/FinancialProductModal";
 
 // Columns Configuration
 const columns = (depositPeriodMonths: string): ColumnDef<FinancialProduct>[] => [
@@ -61,7 +62,7 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
         }
     });
     params.set('page', pageParam.toString());
-    params.set('size', '20');
+    params.set('size', '40');
     const queryString = params.toString();
     const response = await fetch(`${process.env.API_SERVER_HOST}/v1/financials?${queryString}`, {
         method: "GET",
@@ -137,13 +138,14 @@ const TableHeaderComponent = ({table, sortColumn, sortOrder, handleSort}: any) =
 );
 
 // TableBody Component
-const TableBodyComponent = ({table, lastRowRef}: any) => (
+const TableBodyComponent = ({ table, lastRowRef, onRowClick }: any) => (
     <TableBody className="block md:table-row-group">
         {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row: {
                 id: Key | null | undefined;
                 getIsSelected: () => any;
                 getVisibleCells: () => any[];
+                original: FinancialProduct;
             }, rowIndex: number) => (
                 <TableRow
                     key={row.id}
@@ -154,6 +156,7 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
                         rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
                     }`}
                     ref={rowIndex === table.getRowModel().rows.length - 1 ? lastRowRef : null}
+                    onClick={() => onRowClick(row.original)} // 클릭 핸들러 추가
                 >
                     {row.getVisibleCells().map((cell) => {
                         return (
@@ -204,6 +207,9 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [sortColumn, setSortColumn] = useState<'baseInterestRate' | 'maximumInterestRate' | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<FinancialProduct | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
 
     const table = useReactTable({
         data: data?.pages.flatMap(page => page.content) || [],
@@ -259,11 +265,20 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         push(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
+    const handleRowClick = (product: FinancialProduct) => {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
     // Determine the number of skeleton rows to display
-    const skeletonRows = data?.pages[0]?.content.length || 10; // Default to 10 if no data
+    const skeletonRows = data?.pages[0]?.content.length || 40; // Default to 10 if no data
 
     if (isLoading) {
-        return <SkeletonLoader rows={100}/>;
+        return <SkeletonLoader rows={skeletonRows}/>;
     }
 
     if (error) {
@@ -299,8 +314,16 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             <Table className="w-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-md">
                 <TableHeaderComponent table={table} sortColumn={sortColumn} sortOrder={sortOrder}
                                       handleSort={handleSort}/>
-                <TableBodyComponent table={table} lastRowRef={lastRowRef}/>
+                <TableBodyComponent table={table} lastRowRef={lastRowRef} onRowClick={handleRowClick} />
             </Table>
+
+            {selectedProduct && (
+                <FinancialProductModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    data={selectedProduct}
+                />
+            )}
         </div>
     );
 }
