@@ -138,7 +138,7 @@ const TableHeaderComponent = ({table, sortColumn, sortOrder, handleSort}: any) =
 );
 
 // TableBody Component
-const TableBodyComponent = ({ table, lastRowRef, onRowClick }: any) => (
+const TableBodyComponent = ({table, lastRowRef, onRowClick}: any) => (
     <TableBody className="block md:table-row-group">
         {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row: {
@@ -150,28 +150,28 @@ const TableBodyComponent = ({ table, lastRowRef, onRowClick }: any) => (
                 <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`grid grid-cols-2 md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm ${
+                    className={`grid grid-cols-2 md:table-row border-b border-gray-300 dark:border-gray-600 rounded-lg mb-2 shadow-sm transition-shadow duration-200 cursor-pointer ${
                         rowIndex % 2 === 0 ? 'bg-teal-50 dark:bg-teal-800' : 'bg-teal-100 dark:bg-teal-700'
-                    } hover:shadow-md transition-shadow duration-200 ${
+                    } hover:bg-teal-200 dark:hover:bg-teal-600 hover:shadow-md ${
                         rowIndex === table.getRowModel().rows.length - 1 ? 'rounded-b-lg' : ''
                     }`}
                     ref={rowIndex === table.getRowModel().rows.length - 1 ? lastRowRef : null}
-                    onClick={() => onRowClick(row.original)} // 클릭 핸들러 추가
+                    onClick={() => onRowClick(row.original)}
                 >
-                    {row.getVisibleCells().map((cell) => {
-                        return (
-                            <TableCell key={cell.id}
-                                       data-label={cell.column.columnDef.header}
-                                       className="md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300">
-                                <span
-                                    className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
-                                    {cell.column.columnDef.header as string}
-                                </span>
-                                <span
-                                    className="max-md:text-xs">{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
-                            </TableCell>
-                        )
-                    })}
+                    {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                            key={cell.id}
+                            data-label={cell.column.columnDef.header}
+                            className="md:table-cell py-2 px-4 text-gray-800 dark:text-gray-300"
+                        >
+            <span className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
+                {cell.column.columnDef.header as string}
+            </span>
+                            <span className="max-md:text-xs">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </span>
+                        </TableCell>
+                    ))}
                 </TableRow>
             ))
         ) : (
@@ -314,7 +314,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             <Table className="w-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-md">
                 <TableHeaderComponent table={table} sortColumn={sortColumn} sortOrder={sortOrder}
                                       handleSort={handleSort}/>
-                <TableBodyComponent table={table} lastRowRef={lastRowRef} onRowClick={handleRowClick} />
+                <TableBodyComponent table={table} lastRowRef={lastRowRef} onRowClick={handleRowClick}/>
             </Table>
 
             {selectedProduct && (

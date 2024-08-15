@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
+import {useEffect, useState} from 'react';
+import {ArrowUp} from 'lucide-react';
 
 export default function ScrollToTopButton() {
     const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +33,7 @@ export default function ScrollToTopButton() {
             }`}
             aria-label="Scroll to top"
         >
-            <ArrowUp size={24} />
+            <ArrowUp size={24}/>
         </button>
     );
 };

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { FinancialProduct, FinancialProductOption, GroupedOptions } from "@/types/financials";
+import React, {useEffect, useRef} from 'react';
+import {FinancialProduct, FinancialProductOption, GroupedOptions} from "@/types/financials";
 
 interface ModalProps {
     isOpen: boolean;
@@ -7,7 +7,7 @@ interface ModalProps {
     data: FinancialProduct;
 }
 
-export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
+export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
     if (!isOpen || !data) return null;
 
     const groupedOptions: GroupedOptions = groupOptionsByType(data.financialProductOptions);
-    const { financialCompany } = data;
+    const {financialCompany, postMaturityInterestRate, additionalNotes, specialCondition} = data;
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50" onClick={(e) => {
@@ -55,7 +55,7 @@ export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
                 ref={modalRef}
                 className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-4xl w-full relative max-h-screen overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
-                style={{ maxHeight: '90vh' }} // 화면 높이의 90%로 최대 높이 설정
+                style={{maxHeight: '90vh'}}
             >
                 <button
                     onClick={onClose}
@@ -66,23 +66,47 @@ export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
                 <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">{data.financialProductName}</h2>
                 <div className="space-y-4 mb-6">
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 방법:</strong> {data.joinWay}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">만기후 이율:</strong> {data.postMaturityInterestRate}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">특별 조건:</strong> {data.specialCondition}</p>
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 제한:</strong> {data.joinRestriction}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">상품 유형:</strong> {data.financialProductType}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">가입 회원:</strong> {data.joinMember}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">추가 사항:</strong> {data.additionalNotes}</p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">상품 유형:</strong> {data.financialProductType}
+                    </p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">가입 대상:</strong> {data.joinMember}</p>
                 </div>
 
-                {/* 회사 정보 */}
+                {/* 특별 조건 섹션 추가 */}
+                <div className="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
+                    <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">특별 조건</h3>
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{specialCondition}</p>
+                </div>
+
+                {/* 만기 후 이율 및 추가 사항 섹션 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
+                        <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">만기 후 이율</h3>
+                        <p className="text-gray-700 dark:text-gray-300">{postMaturityInterestRate}</p>
+                    </div>
+
+                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
+                        <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">추가 사항</h3>
+                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{additionalNotes}</p>
+                    </div>
+                </div>
+
+                {/* 회사 정보 섹션 */}
                 <div className="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
                     <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">회사 정보</h3>
-                    <p><strong className="text-gray-700 dark:text-gray-300">회사명:</strong> {financialCompany.companyName}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">공시 월:</strong> {financialCompany.dclsMonth}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">담당자:</strong> {financialCompany.dclsChrgMan}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">홈페이지:</strong> <a href={financialCompany.hompUrl} target="_blank" rel="noopener noreferrer" className="text-teal-500 hover:underline">{financialCompany.hompUrl}</a></p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">회사명:</strong> {financialCompany.companyName}
+                    </p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">공시 월:</strong> {financialCompany.dclsMonth}
+                    </p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">담당자:</strong> {financialCompany.dclsChrgMan}
+                    </p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">홈페이지:</strong> <a
+                        href={financialCompany.hompUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-teal-500 hover:underline">{financialCompany.hompUrl}</a></p>
                     <p><strong className="text-gray-700 dark:text-gray-300">전화번호:</strong> {financialCompany.calTel}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">금융 그룹 유형:</strong> {financialCompany.financialGroupType}</p>
+                    <p><strong
+                        className="text-gray-700 dark:text-gray-300">유형:</strong> {financialCompany.financialGroupType}
+                    </p>
                 </div>
 
                 {/* 이율 옵션 테이블 */}
@@ -97,17 +121,23 @@ export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
                                         <h5 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
                                             {reserveType === 'null' ? '' : reserveType} 적립식
                                         </h5>
-                                        <table className="min-w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
+                                        <table
+                                            className="min-w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
                                             <thead>
                                             <tr className="bg-gray-200 dark:bg-gray-600">
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">계약 개월수</th>
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">기본 이율 (%)</th>
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">최대 우대 이율 (%)</th>
+                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">개월수</th>
+                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">기본
+                                                    이율 (%)
+                                                </th>
+                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">최대
+                                                    우대 이율 (%)
+                                                </th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {options.map((option, index) => (
-                                                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
+                                                <tr key={index}
+                                                    className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
                                                     <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.depositPeriodMonths} 개월</td>
                                                     <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.baseInterestRate?.toFixed(2)} %</td>
                                                     <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.maximumInterestRate?.toFixed(2)} %</td>
@@ -124,7 +154,7 @@ export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
 
                 <button
                     onClick={onClose}
-                    className="mt-6 bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition-colors duration-300"
+                    className="w-full bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition-colors duration-300"
                 >
                     닫기
                 </button>
@@ -137,7 +167,7 @@ const groupOptionsByType = (options: FinancialProductOption[]): GroupedOptions =
     const groupedOptions: GroupedOptions = {};
 
     options.forEach(option => {
-        const { interestRateType, reserveType } = option;
+        const {interestRateType, reserveType} = option;
 
         if (!groupedOptions[interestRateType]) {
             groupedOptions[interestRateType] = {};
