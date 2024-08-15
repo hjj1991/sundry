@@ -12,7 +12,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/FinancialProductCell";
-import {Key, useCallback, useRef, useState, useEffect} from "react";
+import {Key, useCallback, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {useInfiniteQuery} from "@tanstack/react-query";
@@ -76,12 +76,21 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
     return response.json();
 };
 
-// Loading Spinner Component
-const LoadingSpinner = () => (
-    <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-teal-500"></div>
-    </div>
-);
+// Skeleton Loader Component
+export function SkeletonLoader({rows}: { rows: number }) {
+    return (
+        <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md max-sm:text-xs">
+            <div className="animate-pulse space-y-4">
+                <div className="bg-gray-300 dark:bg-gray-700 h-6 rounded w-1/4"></div>
+                <div className="bg-gray-300 dark:bg-gray-700 h-4 rounded w-1/2"></div>
+                <div className="bg-gray-300 dark:bg-gray-700 h-4 rounded w-3/4"></div>
+                {Array.from({length: rows}).map((_, index) => (
+                    <div key={index} className="bg-gray-300 dark:bg-gray-700 h-16 rounded mb-2"></div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 // Error Component
 const ErrorComponent = ({message}: { message: string }) => (
@@ -131,7 +140,11 @@ const TableHeaderComponent = ({table, sortColumn, sortOrder, handleSort}: any) =
 const TableBodyComponent = ({table, lastRowRef}: any) => (
     <TableBody className="block md:table-row-group">
         {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row: { id: Key | null | undefined; getIsSelected: () => any; getVisibleCells: () => any[]; }, rowIndex: number) => (
+            table.getRowModel().rows.map((row: {
+                id: Key | null | undefined;
+                getIsSelected: () => any;
+                getVisibleCells: () => any[];
+            }, rowIndex: number) => (
                 <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -151,7 +164,8 @@ const TableBodyComponent = ({table, lastRowRef}: any) => (
                                     className="block md:hidden font-semibold text-teal-700 dark:text-teal-300">
                                     {cell.column.columnDef.header as string}
                                 </span>
-                                <span className="max-md:text-xs">{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
+                                <span
+                                    className="max-md:text-xs">{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
                             </TableCell>
                         )
                     })}
@@ -203,7 +217,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
             newSortingInfo.forEach(sort => {
                 params.append('sort', `${sort.id},${sort.desc ? 'desc' : 'asc'}`);
             });
-            push(`${pathname}?${params.toString()}`);
+            push(`${pathname}?${params.toString()}`, {scroll: false});
         },
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -234,7 +248,7 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         const params = new URLSearchParams(searchParams);
         params.delete('sort');
         params.set('sort', `${column},${newOrder}`);
-        push(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
     const handleResetSort = () => {
@@ -242,11 +256,14 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         setSortOrder('asc');
         const params = new URLSearchParams(searchParams);
         params.delete('sort');
-        push(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
+    // Determine the number of skeleton rows to display
+    const skeletonRows = data?.pages[0]?.content.length || 10; // Default to 10 if no data
+
     if (isLoading) {
-        return <LoadingSpinner/>;
+        return <SkeletonLoader rows={100}/>;
     }
 
     if (error) {

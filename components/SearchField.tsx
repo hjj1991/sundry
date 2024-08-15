@@ -9,7 +9,7 @@ import {useDebouncedCallback} from "use-debounce";
 export default function SearchField() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const {replace} = useRouter();
+    const {push} = useRouter();
 
     const [financialGroupType, setFinancialGroupType] = React.useState("ALL");
     const [depositPeriodMonths, setDepositPeriodMonths] = React.useState("ALL");
@@ -45,7 +45,7 @@ export default function SearchField() {
             params.set(selectType, "");
         }
         params.set('page', '0');
-        replace(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     }, 500);
 
     function handleToggleChange(group: string, value: string) {
@@ -56,7 +56,7 @@ export default function SearchField() {
             params.delete(group);
         }
         params.set('page', '0');
-        replace(`${pathname}?${params.toString()}`);
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     }
 
     function handleSelectChange(value: string) {
