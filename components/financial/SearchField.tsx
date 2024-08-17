@@ -1,15 +1,15 @@
 "use client";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import React from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
+import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Input} from "@/components/ui/input";
+import React, {useState} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useDebouncedCallback} from "use-debounce";
 
 export default function SearchField() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { push } = useRouter();
+    const {push} = useRouter();
 
     const [financialGroupType, setFinancialGroupType] = React.useState("ALL");
     const [depositPeriodMonths, setDepositPeriodMonths] = React.useState("ALL");
@@ -17,6 +17,22 @@ export default function SearchField() {
     const [financialProductType, setFinancialProductType] = React.useState("ALL");
     const [selectType, setSelectType] = React.useState("ALL");
     const [inputValue, setInputValue] = React.useState("");
+    const [open, setOpen] = useState(false);
+    const [delayedOpen, setDelayedOpen] = useState(false);
+
+    const handleOpenChange = (
+        newOpenState: boolean | ((prevState: boolean) => boolean)
+    ) => {
+        if (newOpenState) {
+            setOpen(newOpenState);
+            setDelayedOpen(newOpenState);
+        } else {
+            setOpen(newOpenState);
+            setTimeout(() => {
+                setDelayedOpen(newOpenState);
+            }, 100);
+        }
+    };
 
     React.useEffect(() => {
         setFinancialGroupType(searchParams.get("financialGroupType") || "ALL");
@@ -45,7 +61,7 @@ export default function SearchField() {
             params.set(selectType, "");
         }
         params.set('page', '0');
-        push(`${pathname}?${params.toString()}`, { scroll: false });
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     }, 500);
 
     function handleToggleChange(group: string, value: string) {
@@ -56,7 +72,7 @@ export default function SearchField() {
             params.delete(group);
         }
         params.set('page', '0');
-        push(`${pathname}?${params.toString()}`, { scroll: false });
+        push(`${pathname}?${params.toString()}`, {scroll: false});
     }
 
     function handleSelectChange(value: string) {
@@ -163,7 +179,9 @@ export default function SearchField() {
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <Select value={selectType} onValueChange={handleSelectChange}>
+                <Select value={selectType} onValueChange={handleSelectChange}
+                        open={delayedOpen}
+                        onOpenChange={handleOpenChange}>
                     <SelectTrigger
                         className="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md">
                         <SelectValue placeholder="검색조건"/>
