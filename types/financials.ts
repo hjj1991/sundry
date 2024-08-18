@@ -48,6 +48,7 @@ export type SearchParams = {
     joinRestriction: string;
     depositPeriodMonths: string;
     financialProductType: string;
+    financialProductId: string | "";
     page: string | "0";
     pageSize: string | "20";
 }

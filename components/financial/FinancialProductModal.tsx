@@ -9,7 +9,6 @@ interface ModalProps {
 
 export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         if (!isOpen) return;
 
@@ -45,6 +44,22 @@ export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
     const groupedOptions: GroupedOptions = groupOptionsByType(data.financialProductOptions);
     const {financialCompany, postMaturityInterestRate, additionalNotes, specialCondition} = data;
 
+    const generateShareUrl = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('financialProductId', data.financialProductId.toString());
+        return url.toString();
+    };
+
+    const copyUrlToClipboard = async () => {
+        const shareUrl = generateShareUrl();
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            alert('URL이 클립보드에 복사되었습니다!');
+        } catch (err) {
+            alert('URL 복사에 실패했습니다.');
+        }
+    };
+
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50" onClick={(e) => {
             if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -57,13 +72,23 @@ export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
                 onClick={(e) => e.stopPropagation()}
                 style={{maxHeight: '90vh'}}
             >
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
-                >
-                    &times;
-                </button>
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">{data.financialProductName}</h2>
+                <div className="absolute top-4 right-4 flex space-x-4">
+                    <button
+                        onClick={copyUrlToClipboard}
+                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
+                    >
+                        공유
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
+                    >
+                        &times;
+                    </button>
+                </div>
+                <div className="mt-8">
+                    <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">{data.financialProductName}</h2>
+                </div>
                 <div className="space-y-4 mb-6">
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 방법:</strong> {data.joinWay}</p>
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 제한:</strong> {data.joinRestriction}</p>

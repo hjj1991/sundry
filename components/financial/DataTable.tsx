@@ -12,7 +12,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {FinancialProduct, FinancialProductResponse, SearchParams} from "@/types/financials";
 import FinancialProductCell from "@/components/financial/FinancialProductCell";
-import {Key, useCallback, useRef, useState} from "react";
+import {Key, useCallback, useEffect, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {useInfiniteQuery} from "@tanstack/react-query";
@@ -75,6 +75,27 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
         throw new Error('Network response was not ok');
     }
     return response.json();
+};
+
+// Fetch specific financial product details
+const getFinancialProductById = async (financialProductId: string): Promise<FinancialProduct> => {
+    const response = await fetch(`${process.env.API_SERVER_HOST}/v1/financialProducts/${financialProductId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        cache: "no-cache"
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+};
+
+// Helper function to exclude financialProductId from searchParams
+const filterSearchParams = (params: SearchParams) => {
+    const {financialProductId, ...rest} = params;
+    return rest;
 };
 
 // Skeleton Loader Component
@@ -188,7 +209,7 @@ const TableBodyComponent = ({table, lastRowRef, onRowClick}: any) => (
 // DataTable Component
 export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const pathname = usePathname();
-    const {push} = useRouter();
+    const {push, replace} = useRouter();
     const {
         data,
         fetchNextPage,
@@ -197,8 +218,8 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
         error,
         isLoading
     } = useInfiniteQuery({
-        queryKey: [searchParams],
-        queryFn: ({pageParam, queryKey}) => getFinancials(pageParam, queryKey),
+        queryKey: [filterSearchParams(searchParams)],
+        queryFn: ({pageParam, queryKey}) => getFinancials(pageParam, [{...queryKey[0], financialProductId: ''}]),
         initialPageParam: 0,
         getPreviousPageParam: (firstPage) => firstPage.number > 0 ? firstPage.number - 1 : undefined,
         getNextPageParam: (lastPage) => !lastPage.last ? lastPage.number + 1 : undefined,
@@ -209,6 +230,17 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
     const [sortColumn, setSortColumn] = useState<'baseInterestRate' | 'maximumInterestRate' | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<FinancialProduct | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (searchParams.financialProductId) {
+                const product = await getFinancialProductById(searchParams.financialProductId);
+                setSelectedProduct(product);
+                setIsModalOpen(true);
+            }
+        };
+        fetchProduct();
+    }, []);
 
 
     const table = useReactTable({
@@ -267,11 +299,17 @@ export function DataTable({searchParams}: { searchParams: SearchParams }) {
 
     const handleRowClick = (product: FinancialProduct) => {
         setSelectedProduct(product);
+        const params = new URLSearchParams(searchParams);
+        params.set('financialProductId', product.financialProductId.toString())
         setIsModalOpen(true);
+        replace(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
     const handleCloseModal = () => {
+        const params = new URLSearchParams(searchParams);
+        params.delete('financialProductId')
         setIsModalOpen(false);
+        replace(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
     // Determine the number of skeleton rows to display
