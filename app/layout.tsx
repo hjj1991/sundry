@@ -4,7 +4,7 @@ import Header from "@/components/ui/header";
 import {cn, getMetadata} from "@/lib/utils";
 import Providers from "@/app/utils/providers";
 import Footer from "@/components/ui/footer";
-import ScrollToTopButton from "@/components/ScrollToTopButton";
+import ScrollToTopAndShareButton from "@/components/ScrollToTopAndShareButton";
 import {GoogleAnalytics} from '@next/third-parties/google'
 import {ThemeProvider} from "@/components/ThemeProvider";
 
@@ -27,16 +27,16 @@ export default function RootLayout({children}: Readonly<{
             )}
         >
         <ThemeProvider>
-        {/* Header */}
-        <Header/>
-        {/* main page */}
-        <Providers>
-            <main className="flex-1 pt-24">
-                {children}
-            </main>
-        </Providers>
-        <Footer/>
-        <ScrollToTopButton/>
+            {/* Header */}
+            <Header/>
+            {/* main page */}
+            <Providers>
+                <main className="flex-1 pt-24">
+                    {children}
+                </main>
+            </Providers>
+            <Footer/>
+            <ScrollToTopAndShareButton/>
         </ThemeProvider>
         {/* Google Analytics - Production 환경에서만 실행 */}
         {process.env.NODE_ENV === "production" && (
