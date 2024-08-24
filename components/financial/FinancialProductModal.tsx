@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {FinancialProduct, FinancialProductOption, GroupedOptions} from "@/types/financials";
+import {Share2} from 'lucide-react'; // 아이콘 추가
 
 interface ModalProps {
     isOpen: boolean;
@@ -9,6 +10,7 @@ interface ModalProps {
 
 export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (!isOpen) return;
 
@@ -44,24 +46,43 @@ export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
     const groupedOptions: GroupedOptions = groupOptionsByType(data.financialProductOptions);
     const {financialCompany, postMaturityInterestRate, additionalNotes, specialCondition} = data;
 
+    // URL 복사 함수
+    const shareUrl = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                alert('URL이 클립보드에 복사되었습니다!');
+            })
+            .catch(err => {
+                console.error('URL 복사 실패:', err);
+            });
+    };
+
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50" onClick={(e) => {
-            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-                onClose();
-            }
-        }}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
             <div
                 ref={modalRef}
                 className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-4xl w-full relative max-h-screen overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
                 style={{maxHeight: '90vh'}}
             >
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
-                >
-                    &times;
-                </button>
+                <div className="absolute top-4 right-4 flex items-center space-x-2">
+                    {/* URL 복사 버튼 추가 */}
+
+                    <button
+                        onClick={shareUrl}
+                        className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-300"
+                        aria-label="Share URL"
+                    >
+                        <Share2 className="mr-2" size={20}/> {/* 아이콘 추가 */}
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
+                        aria-label="Close modal"
+                    >
+                        &times;
+                    </button>
+                </div>
                 <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">{data.financialProductName}</h2>
                 <div className="space-y-4 mb-6">
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 방법:</strong> {data.joinWay}</p>
@@ -71,7 +92,7 @@ export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
                     <p><strong className="text-gray-700 dark:text-gray-300">가입 대상:</strong> {data.joinMember}</p>
                 </div>
 
-                {/* 특별 조건 섹션 추가 */}
+                {/* 특별 조건 섹션 */}
                 <div className="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
                     <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">특별 조건</h3>
                     <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{specialCondition}</p>
@@ -159,7 +180,8 @@ export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
                 </button>
             </div>
         </div>
-    );
+    )
+        ;
 }
 
 const groupOptionsByType = (options: FinancialProductOption[]): GroupedOptions => {

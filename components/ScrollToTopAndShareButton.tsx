@@ -37,7 +37,7 @@ export default function ScrollToTopAndShareButton() {
     };
 
     return (
-        <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-50">
+        <div className="fixed bottom-4 right-4 flex flex-col space-y-2">
             {/* 스크롤 최상단 버튼 (스크롤에 따라 나타남) */}
             <button
                 onClick={scrollToTop}
@@ -50,7 +50,7 @@ export default function ScrollToTopAndShareButton() {
             {/* 항상 보이는 공유 버튼 */}
             <button
                 onClick={shareUrl}
-                className="p-3 bg-blue-500 text-white rounded-full shadow-lg z-50"
+                className="p-3 bg-blue-500 text-white rounded-full shadow-lg"
                 aria-label="Share URL"
             >
                 <Share2 size={24}/>
