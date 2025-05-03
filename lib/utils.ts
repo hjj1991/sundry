@@ -78,6 +78,9 @@ export const getMetadata = (metadataProps?: GenerateMetadataProps) => {
         url: OG_IMAGE,
       },
     },
+    other: {
+      'google-adsense-account': 'ca-pub-2645246382899481',
+    }
   };
 
   return metadata;
