@@ -17,7 +17,7 @@ const getFinancials = async (
     params.set("depositPeriodMonths", "12");
     params.set("sort", "maximumInterestRate,desc");
     const response = await fetch(
-        `${process.env.API_SERVER_HOST}/v1/financials?${params.toString()}`,
+        `${process.env.API_SERVER_HOST}/financial-products?${params.toString()}`,
         {
             method: "GET",
             headers: {

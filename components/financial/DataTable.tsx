@@ -64,7 +64,7 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
     params.set('page', pageParam.toString());
     params.set('size', '40');
     const queryString = params.toString();
-    const response = await fetch(`${process.env.API_SERVER_HOST}/v1/financials?${queryString}`, {
+    const response = await fetch(`${process.env.API_SERVER_HOST}/financial-products?${queryString}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -79,7 +79,7 @@ const getFinancials = async (pageParam = 0, queryKey: SearchParams[]): Promise<F
 
 // Fetch specific financial product details
 const getFinancialProductById = async (financialProductId: string): Promise<FinancialProduct> => {
-    const response = await fetch(`${process.env.API_SERVER_HOST}/v1/financialProducts/${financialProductId}`, {
+    const response = await fetch(`${process.env.API_SERVER_HOST}/financial-products/${financialProductId}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
