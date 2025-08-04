@@ -10,10 +10,6 @@ const config = {
 	],
   prefix: "",
   theme: {
-    fontFamily: {
-      korLibrary: ["korLibrary", "korLibrary_en"],
-      jalnan: ["jalnan"]
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -22,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)"],
+        heading: ["var(--font-heading)"],
+      },
       margin: {
         '8': '2rem',
         '16': '4rem',
@@ -35,8 +35,6 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        footerBackground: "hsl(var(--footer-background))",
-        footerForeground: "hsl(var(--footer-foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

@@ -1,36 +1,16 @@
 import { PostData } from "@/types/posts";
-import Link from "next/link";
 import { getLatestPostsData } from "@/lib/posts";
+import {PostCard} from "@/components/post/PostCard";
 
 // LatestPosts component
 export default async function LatestPosts() {
-    const posts: PostData[] = await getLatestPostsData(10);
+    const posts: PostData[] = await getLatestPostsData(6); // Fetch 6 posts for a 2x3 grid
 
     return (
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-            <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                    최신 글
-                </h2>
-            </div>
-            <ul className="space-y-4">
-                {posts.map((post) => (
-                    <li key={post.id}
-                        className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-gray-700 pb-4">
-                        <Link href={`/posts/${post.id}`}
-                              className="text-base font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                            {post.title}
-                        </Link>
-                        <span className="text-sm text-gray-500 dark:text-gray-400 mt-2 md:mt-0">
-                            {new Date(post.date).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                            })}
-                        </span>
-                    </li>
-                ))}
-            </ul>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+                <PostCard key={post.id} postData={post} />
+            ))}
         </div>
     );
 }

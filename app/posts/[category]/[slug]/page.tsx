@@ -38,48 +38,52 @@ export default async function Post({params}: Params) {
     const {title, description, date, category, source} = await getPostData(params.category, params.slug);
     const components = useMDXComponents();
     const rehypeOptions = {
-        theme: 'one-light', // 밝은 배경을 사용하는 테마
+        theme: 'one-dark-pro', // 다크 모드에 어울리는 테마로 변경
         keepBackground: true,
     };
     const linkUrl = `/posts/${category}`;
     return (
-        <div className="container mx-auto">
-            <div className="text-center">
-                <h1 className={cn('text-4xl font-bold')}>{title}</h1>
-                <div className="flex flex-col space-x-2 text-neutral-500 mt-8">
-                    <div className="my-2 font-bold text-xl">
-                        <Link
-                            href={linkUrl}
-                            className="relative inline-flex items-center text-3xl font-extrabold text-orange-500 dark:text-orange-300 hover:text-lime-500 dark:hover:text-lime-400 transition duration-300 ease-in-out"
-                        >
-                            <Tag className="mr-2"/> {/* Icon with margin to the right */}
-                            <span className="text-center">{category}</span> {/* Span to ensure text is clickable */}
-                        </Link>
-                    </div>
-                    <div className="flex justify-center items-center">
-                        <CalendarRange className="mr-2"/>
+        <div>
+            <div className="text-center mb-8">
+                <h1 className={cn('text-4xl md:text-5xl font-bold font-heading mb-4')}>{title}</h1>
+                <div className="flex flex-col items-center justify-center space-y-2 text-muted-foreground">
+                    <Link
+                        href={linkUrl}
+                        className="inline-flex items-center text-lg font-heading hover:text-primary transition-colors"
+                    >
+                        <Tag className="mr-2 w-5 h-5"/>
+                        <span>{category}</span>
+                    </Link>
+                    <div className="flex items-center text-sm">
+                        <CalendarRange className="mr-2 w-4 h-4"/>
                         <p>{formatDate(date)}</p>
                     </div>
                 </div>
             </div>
-            <hr className="border-2 border-dotted my-8 border-amber-400"/>
-            <CustomTOC title="목차"/> {/* 사용자 정의 TOC 컴포넌트 추가 */}
-            <MDXRemote
-                source={source}
-                components={components}
-                options={{
-                    parseFrontmatter: true,
-                    mdxOptions: {
-                        // @ts-ignore
-                        remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
-                        rehypePlugins: [
-                            [rehypeAutolinkHeadings, {behavior: 'append', properties: {className: 'toc-link'}}],
-                            [rehypePrettyCode, rehypeOptions]
-                        ]
-                    }
-                }}
-            />
-            <hr className="border-2 border-dotted my-8 border-amber-400"/>
+            <hr className="border-t-2 border-dashed border-border my-8"/>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8">
+                <article className="prose dark:prose-invert max-w-none">
+                    <MDXRemote
+                        source={source}
+                        components={components}
+                        options={{
+                            parseFrontmatter: true,
+                            mdxOptions: {
+                                // @ts-ignore
+                                remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
+                                rehypePlugins: [
+                                    [rehypeAutolinkHeadings, {behavior: 'append', properties: {className: 'toc-link'}}],
+                                    [rehypePrettyCode, rehypeOptions]
+                                ]
+                            }
+                        }}
+                    />
+                </article>
+                <aside className="hidden lg:block sticky top-24 h-fit">
+                    <CustomTOC title="목차"/>
+                </aside>
+            </div>
+            <hr className="border-t-2 border-dashed border-border my-8"/>
             <AuthorBio />
             <Giscus/>
         </div>

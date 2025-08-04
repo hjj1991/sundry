@@ -34,23 +34,26 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
     const selectCategory = selectedCategory ? decodeURIComponent(selectedCategory.replace(/\+/g, ' ')) : 'ALL';
 
     return (
-        <div className="mb-8 relative">
-            <Select
-                value={selectCategory}
-                onValueChange={handleSelectChange}
-                open={delayedOpen}
-                onOpenChange={handleOpenChange}
-            >
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="전체" />
-                </SelectTrigger>
-                <SelectContent className="mt-2">
-                    <SelectItem value="ALL">전체</SelectItem>
-                    {categories.map((category, index) => (
-                        <SelectItem key={index} value={category}>{category}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+        <div className="w-full flex justify-start mb-8">
+            <div className="flex flex-col gap-2">
+                <label htmlFor="category-select" className="text-sm font-medium text-muted-foreground">카테고리</label>
+                <Select
+                    value={selectCategory}
+                    onValueChange={handleSelectChange}
+                    open={delayedOpen}
+                    onOpenChange={handleOpenChange}
+                >
+                    <SelectTrigger id="category-select" className="w-[180px]">
+                        <SelectValue placeholder="전체" />
+                    </SelectTrigger>
+                    <SelectContent className="mt-2">
+                        <SelectItem value="ALL">전체</SelectItem>
+                        {categories.map((category, index) => (
+                            <SelectItem key={index} value={category}>{category}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
     );
 }

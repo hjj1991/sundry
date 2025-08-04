@@ -1,190 +1,119 @@
-"use client";
-import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
+'use client'
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Input} from "@/components/ui/input";
-import React, {useState} from "react";
+import React from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useDebouncedCallback} from "use-debounce";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Filter } from "lucide-react";
 
 export default function SearchField() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const {push} = useRouter();
+    const { push } = useRouter();
 
-    const [financialGroupType, setFinancialGroupType] = React.useState("ALL");
-    const [depositPeriodMonths, setDepositPeriodMonths] = React.useState("ALL");
-    const [joinRestriction, setJoinRestriction] = React.useState("ALL");
-    const [financialProductType, setFinancialProductType] = React.useState("ALL");
-    const [selectType, setSelectType] = React.useState("ALL");
-    const [inputValue, setInputValue] = React.useState("");
-    const [open, setOpen] = useState(false);
-    const [delayedOpen, setDelayedOpen] = useState(false);
+    const createQueryString = React.useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (value && value !== 'ALL') {
+                params.set(name, value);
+            } else {
+                params.delete(name);
+            }
+            params.set('page', '0');
+            return params.toString();
+        },
+        [searchParams]
+    );
 
-    const handleOpenChange = (
-        newOpenState: boolean | ((prevState: boolean) => boolean)
-    ) => {
-        if (newOpenState) {
-            setOpen(newOpenState);
-            setDelayedOpen(newOpenState);
+    const handleInputChange = useDebouncedCallback((value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const selectType = params.get('selectType') || 'companyName';
+        if (value) {
+            params.set(selectType, value);
         } else {
-            setOpen(newOpenState);
-            setTimeout(() => {
-                setDelayedOpen(newOpenState);
-            }, 100);
-        }
-    };
-
-    React.useEffect(() => {
-        setFinancialGroupType(searchParams.get("financialGroupType") || "ALL");
-        setDepositPeriodMonths(searchParams.get("depositPeriodMonths") || "ALL");
-        setJoinRestriction(searchParams.get("joinRestriction") || "ALL");
-        setFinancialProductType(searchParams.get("financialProductType") || "ALL");
-        if (searchParams.has("companyName")) {
-            setSelectType('companyName');
-            setInputValue(searchParams.get("companyName") || "");
-        } else if (searchParams.has('financialProductName')) {
-            setSelectType('financialProductName');
-            setInputValue(searchParams.get("financialProductName") || "");
-        } else {
-            setSelectType("");
-        }
-    }, [searchParams]);
-
-    const debouncedHandleSearch = useDebouncedCallback((inputValue: string) => {
-        const params = new URLSearchParams(searchParams);
-        setInputValue(inputValue);
-        if (inputValue && selectType) {
-            params.delete("companyName");
-            params.delete("financialProductName");
-            params.set(selectType, inputValue);
-        } else if (selectType && !inputValue) {
-            params.set(selectType, "");
+            params.delete(selectType);
         }
         params.set('page', '0');
-        push(`${pathname}?${params.toString()}`, {scroll: false});
+        push(`${pathname}?${params.toString()}`, { scroll: false });
     }, 500);
 
-    function handleToggleChange(group: string, value: string) {
-        const params = new URLSearchParams(searchParams);
-        if (value && value !== 'ALL') {
-            params.set(group, value);
-        } else {
-            params.delete(group);
-        }
-        params.set('page', '0');
-        push(`${pathname}?${params.toString()}`, {scroll: false});
-    }
-
-    function handleSelectChange(value: string) {
-        setSelectType(value);
-        setInputValue("");
-    }
-
     return (
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
-                <div className="flex flex-col space-y-2">
-                    <label className="text-gray-700 dark:text-gray-300 font-medium">금융 그룹</label>
-                    <div className="flex flex-wrap gap-2">
-                        <ToggleGroup type="single" value={financialGroupType}
-                                     onValueChange={(value) => handleToggleChange('financialGroupType', value)}>
-                            <ToggleGroupItem value="ALL"
-                                             className={`p-2 border rounded-md ${financialGroupType === 'ALL' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                전체
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="BANK"
-                                             className={`p-2 border rounded-md ${financialGroupType === 'BANK' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                은행
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="SAVING_BANK"
-                                             className={`p-2 border rounded-md ${financialGroupType === 'SAVING_BANK' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                저축은행
-                            </ToggleGroupItem>
-                        </ToggleGroup>
-                    </div>
-                </div>
-                <div className="flex flex-col space-y-2">
-                    <label className="text-gray-700 dark:text-gray-300 font-medium">예치 기간</label>
-                    <div className="flex flex-wrap gap-2">
-                        <ToggleGroup type="single" value={depositPeriodMonths}
-                                     onValueChange={(value) => handleToggleChange('depositPeriodMonths', value)}>
-                            <ToggleGroupItem value="ALL"
-                                             className={`p-2 border rounded-md ${depositPeriodMonths === 'ALL' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                전체
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="6"
-                                             className={`p-2 border rounded-md ${depositPeriodMonths === '6' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                6개월
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="12"
-                                             className={`p-2 border rounded-md ${depositPeriodMonths === '12' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                12개월
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="24"
-                                             className={`p-2 border rounded-md ${depositPeriodMonths === '24' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                24개월
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="36"
-                                             className={`p-2 border rounded-md ${depositPeriodMonths === '36' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                36개월
-                            </ToggleGroupItem>
-                        </ToggleGroup>
-                    </div>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
-                <div className="flex flex-col space-y-2">
-                    <label className="text-gray-700 dark:text-gray-300 font-medium">가입 제한</label>
-                    <div className="flex flex-wrap gap-2">
-                        <ToggleGroup type="single" value={joinRestriction}
-                                     onValueChange={(value) => handleToggleChange('joinRestriction', value)}>
-                            <ToggleGroupItem value="ALL"
-                                             className={`p-2 border rounded-md ${joinRestriction === 'ALL' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                전체
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="NO_RESTRICTION"
-                                             className={`p-2 border rounded-md ${joinRestriction === 'NO_RESTRICTION' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                제한없음
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="LOW_INCOME_ONLY"
-                                             className={`p-2 border rounded-md ${joinRestriction === 'LOW_INCOME_ONLY' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                서민전용
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="PARTIALLY_RESTRICTED"
-                                             className={`p-2 border rounded-md ${joinRestriction === 'PARTIALLY_RESTRICTED' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                일부제한
-                            </ToggleGroupItem>
-                        </ToggleGroup>
-                    </div>
-                </div>
-                <div className="flex flex-col space-y-2">
-                    <label className="text-gray-700 dark:text-gray-300 font-medium">금융 상품 유형</label>
-                    <div className="flex flex-wrap gap-2">
-                        <ToggleGroup type="single" value={financialProductType}
-                                     onValueChange={(value) => handleToggleChange('financialProductType', value)}>
-                            <ToggleGroupItem value="ALL"
-                                             className={`p-2 border rounded-md ${financialProductType === 'ALL' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                전체
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="SAVINGS"
-                                             className={`p-2 border rounded-md ${financialProductType === 'SAVINGS' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                예금
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="INSTALLMENT_SAVINGS"
-                                             className={`p-2 border rounded-md ${financialProductType === 'INSTALLMENT_SAVINGS' ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200' : 'border-gray-300 dark:border-gray-600'} hover:bg-gray-100 dark:hover:bg-gray-700 max-sm:text-xs`}>
-                                적금
-                            </ToggleGroupItem>
-                        </ToggleGroup>
-                    </div>
-                </div>
-            </div>
-            <div className="flex items-center space-x-2">
-                <Select value={selectType} onValueChange={handleSelectChange}
-                        open={delayedOpen}
-                        onOpenChange={handleOpenChange}>
-                    <SelectTrigger
-                        className="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md">
-                        <SelectValue placeholder="검색조건"/>
+        <div className="p-4 bg-card border rounded-lg shadow-sm">
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="filters">
+                    <AccordionTrigger>
+                        <h3 className="text-lg font-medium flex items-center gap-2"><Filter className="w-5 h-5" />필터 및 정렬</h3>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+                            <div className="col-span-full md:col-span-2 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* 금융 그룹 */}
+                                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('financialGroupType', value)}`, { scroll: false })} defaultValue={searchParams.get('financialGroupType') || 'ALL'}>
+                                    <SelectTrigger><SelectValue placeholder="금융 그룹" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">전체 그룹</SelectItem>
+                                        <SelectItem value="BANK">은행</SelectItem>
+                                        <SelectItem value="SAVING_BANK">저축은행</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                {/* 금융 상품 유형 */}
+                                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('financialProductType', value)}`, { scroll: false })} defaultValue={searchParams.get('financialProductType') || 'ALL'}>
+                                    <SelectTrigger><SelectValue placeholder="금융 상품 유형" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">전체 상품</SelectItem>
+                                        <SelectItem value="SAVINGS">예금</SelectItem>
+                                        <SelectItem value="INSTALLMENT_SAVINGS">적금</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="col-span-full md:col-span-2 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* 예치 기간 */}
+                                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('depositPeriodMonths', value)}`, { scroll: false })} defaultValue={searchParams.get('depositPeriodMonths') || 'ALL'}>
+                                    <SelectTrigger><SelectValue placeholder="예치 기간" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">전체 기간</SelectItem>
+                                        <SelectItem value="6">6개월</SelectItem>
+                                        <SelectItem value="12">12개월</SelectItem>
+                                        <SelectItem value="24">24개월</SelectItem>
+                                        <SelectItem value="36">36개월</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                {/* 가입 제한 */}
+                                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('joinRestriction', value)}`, { scroll: false })} defaultValue={searchParams.get('joinRestriction') || 'ALL'}>
+                                    <SelectTrigger><SelectValue placeholder="가입 제한" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">전체</SelectItem>
+                                        <SelectItem value="NO_RESTRICTION">제한없음</SelectItem>
+                                        <SelectItem value="LOW_INCOME_ONLY">서민전용</SelectItem>
+                                        <SelectItem value="PARTIALLY_RESTRICTED">일부제한</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 정렬 */}
+                            <div className="col-span-full">
+                                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('sort', value)}`, { scroll: false })} defaultValue={searchParams.get('sort') || undefined}>
+                                    <SelectTrigger><SelectValue placeholder="정렬 기준" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">기본 정렬</SelectItem>
+                                        <SelectItem value="options.maxRate,desc">최고 금리순</SelectItem>
+                                        <SelectItem value="options.initRate,desc">기본 금리순</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+
+            <div className="flex items-center space-x-2 mt-4">
+                <Select onValueChange={(value) => push(`${pathname}?${createQueryString('selectType', value)}`, { scroll: false })} defaultValue={searchParams.get('selectType') || 'companyName'}>
+                    <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="검색 조건" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="companyName">회사명</SelectItem>
@@ -192,13 +121,10 @@ export default function SearchField() {
                     </SelectContent>
                 </Select>
                 <Input
-                    onChange={(e) => {
-                        setInputValue(e.target.value); // 입력된 값 바로 업데이트
-                        debouncedHandleSearch(e.target.value); // 디바운싱 적용된 검색 호출
-                    }}
-                    value={inputValue}
-                    className="w-full max-w-md border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2"
-                    placeholder="검색어를 입력하세요"
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    defaultValue={searchParams.get(searchParams.get('selectType') || 'companyName') || ''}
+                    className="w-full"
+                    placeholder="검색어를 입력하세요..."
                 />
             </div>
         </div>

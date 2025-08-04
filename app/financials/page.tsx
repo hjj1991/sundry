@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 
 export default function FinancialsPage({searchParams}: { searchParams: SearchParams }) {
     return (
-        <div className="flex flex-col gap-5 p-6 w-full max-w-screen-lg mx-auto">
+        <div className="flex flex-col gap-5 p-6">
             {/* 상위 컨테이너에 여백 및 최대 너비 적용 */}
             <PageTitle title="금융상품 조회"/>
             {/* PageTitle 컴포넌트에 하단 여백 추가 */}

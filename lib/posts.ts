@@ -40,7 +40,7 @@ export async function getPostData(category: string, slug: string): Promise<PostD
     };
 }
 
-export async function getSortedPostsData(category?: string): Promise<PostData[]> {
+export async function getSortedPostsData(category?: string, page: number = 1, pageSize: number = 10): Promise<{ posts: PostData[], totalPages: number }> {
     const filePaths = getPostFiles(category);
     const allPostsData = await Promise.all(filePaths.map(async (filePath) => {
         const fileContents = fs.readFileSync(filePath, 'utf8');
@@ -77,7 +77,19 @@ export async function getSortedPostsData(category?: string): Promise<PostData[]>
         } as PostData;
     }));
 
-    return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+    const sortedPosts = allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+    const totalPages = Math.ceil(sortedPosts.length / pageSize);
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedPosts = sortedPosts.slice(start, end);
+
+    return { posts: paginatedPosts, totalPages };
+}
+
+export async function getLatestPostsData(limit: number): Promise<PostData[]> {
+    const { posts } = await getSortedPostsData(undefined, 1, limit);
+    return posts;
 }
 
 export function getAllSlugIds(category?: string) {
@@ -140,8 +152,4 @@ export function getAllCategories(filter?: string): {allCategories: string[], sel
         allCategories: allCategories,
         selectedCategory: selectedCategory
     };
-}
-
-export async function getLatestPostsData(limit: number): Promise<PostData[]> {
-    return (await getSortedPostsData()).slice(0, limit);
 }

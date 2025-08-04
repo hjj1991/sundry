@@ -1,20 +1,24 @@
 import { getAllCategories, getSortedPostsData } from "@/lib/posts";
 import { PostCard } from "@/components/post/PostCard";
 import CategorySelect from "@/components/post/CategorySelect";
+import Pagination from "@/components/Pagination";
 
-export default async function Posts({ category }: { category?: string }) {
-    const allPostsData = await getSortedPostsData(category);
+export default async function Posts({ category, searchParams }: { category?: string, searchParams: { page?: string } }) {
+    const currentPage = Number(searchParams?.page) || 1;
+    const pageSize = 9; // Display 9 posts per page for a 3x3 grid
+
+    const { posts: allPostsData, totalPages } = await getSortedPostsData(category, currentPage, pageSize);
     const { allCategories } = getAllCategories(category);
+
     return (
-        <div className="flex flex-col items-center mx-auto">
+                <div className="flex flex-col items-center">
             <CategorySelect selectedCategory={category} categories={allCategories} />
-            <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 w-full">
                 {allPostsData.map(postData => (
-                    <li key={postData.id}>
-                        <PostCard postData={postData} />
-                    </li>
+                    <PostCard key={postData.id} postData={postData} />
                 ))}
-            </ul>
+            </div>
+            <Pagination totalPages={totalPages} currentPage={currentPage} />
         </div>
     );
 }

@@ -9,7 +9,7 @@ export function PostCard({postData}: { postData: PostData }) {
     const thumbnailPath = postData.thumbnail ? postData.thumbnail : "/posts/default_thumbnail.jpg";
     return (
         <Card
-            className={cn("h-[460px] bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-700 mx-2")}
+            className={cn("h-[460px] bg-card text-card-foreground shadow-md dark:shadow-gray-700 mx-2 transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl")}
             style={{
                 width: "calc(100% - 20px)", // 모바일 사이즈에서 -20px 적용
                 maxWidth: "360px", // 최대 너비 설정
@@ -32,15 +32,15 @@ export function PostCard({postData}: { postData: PostData }) {
                 </CardHeader>
                 <CardContent className="grid gap-4 min-h-36">
                     <div className="space-y-1">
-                        <p className="text-lg font-extralight text-lime-500 dark:text-lime-400">
+                        <p className="text-lg font-extralight text-primary">
                             {postData.category}
                         </p>
-                        <p className="text-2xl font-medium text-gray-900 dark:text-gray-100">
+                        <p className="text-2xl font-medium break-words">
                             {postData.title}
                         </p>
                     </div>
                 </CardContent>
-                <CardFooter className="flex space-x-2 text-neutral-500 dark:text-neutral-400">
+                <CardFooter className="flex space-x-2 text-muted-foreground">
                     <CalendarRange/> <p>{formatDate(postData.date)}</p>
                 </CardFooter>
             </Link>
