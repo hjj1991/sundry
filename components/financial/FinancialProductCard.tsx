@@ -12,7 +12,7 @@ interface FinancialProductCardProps {
 }
 
 export default function FinancialProductCard({ product, onShowDetails }: FinancialProductCardProps) {
-    const highestRate = product.financialProductOptions.reduce((max, option) => Math.max(max, option.maximumInterestRate), 0);
+    const highestRate = product.financialProductOptions.reduce((max, option) => Math.max(max, option.maximumInterestRate ?? 0), 0);
 
     return (
         <Card className="flex flex-col justify-between transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
