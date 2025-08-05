@@ -21,6 +21,6 @@ export async function generateMetadata({params, searchParams}: Params, parent: R
     return getMetadata({title: decodeUriComponentSafe(params.category), asPath: asPath});
 }
 
-export default function Category({params: {category}}: { params: { category: string } }) {
-    return <Posts category={category}/>
+export default function Category({params: {category}, searchParams}: { params: { category: string }, searchParams: { page?: string, query?: string } }) {
+    return <Posts category={category} searchParams={searchParams}/>
 }

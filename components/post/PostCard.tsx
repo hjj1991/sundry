@@ -9,39 +9,35 @@ export function PostCard({postData}: { postData: PostData }) {
     const thumbnailPath = postData.thumbnail ? postData.thumbnail : "/posts/default_thumbnail.jpg";
     return (
         <Card
-            className={cn("h-[460px] bg-card text-card-foreground shadow-md dark:shadow-gray-700 mx-2 transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl")}
-            style={{
-                width: "calc(100% - 20px)", // 모바일 사이즈에서 -20px 적용
-                maxWidth: "360px", // 최대 너비 설정
-                minWidth: "calc(100% - 20px)" // 380px보다 작은 경우 적용
-            }}
-        >
-            <Link href={`/posts/${postData.id}`}>
-                <CardHeader className="relative h-64 w-full overflow-hidden p-2 rounded-lg">
-                    <div className="relative h-full w-full rounded-lg overflow-hidden">
-                        <Image
-                            src={thumbnailPath}
-                            alt="썸네일"
-                            fill
-                            style={{objectFit: "contain"}}
-                            className="w-full h-full rounded-lg"
-                            priority
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                    </div>
+            className={cn("group relative flex flex-col h-full bg-card text-card-foreground shadow-lg rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2")}>
+            <Link href={`/posts/${postData.id}`} className="flex flex-col h-full">
+                <CardHeader className="relative h-48 w-full overflow-hidden p-0 bg-muted">
+                    <Image
+                        src={thumbnailPath}
+                        alt={postData.title}
+                        fill
+                        style={{objectFit: "contain"}}
+                        className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                        priority
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-300" />
                 </CardHeader>
-                <CardContent className="grid gap-4 min-h-36">
-                    <div className="space-y-1">
-                        <p className="text-lg font-extralight text-primary">
+                <CardContent className="flex-grow p-6 grid gap-4">
+                    <div className="space-y-2">
+                        <p className="text-sm font-medium text-primary">
                             {postData.category}
                         </p>
-                        <p className="text-2xl font-medium break-words">
+                        <h3 className="text-xl font-bold leading-snug break-words">
                             {postData.title}
-                        </p>
+                        </h3>
                     </div>
                 </CardContent>
-                <CardFooter className="flex space-x-2 text-muted-foreground">
-                    <CalendarRange/> <p>{formatDate(postData.date)}</p>
+                <CardFooter className="flex items-center justify-between p-6 pt-0 text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-2">
+                        <CalendarRange className="h-4 w-4"/> 
+                        <p>{formatDate(postData.date)}</p>
+                    </div>
                 </CardFooter>
             </Link>
         </Card>

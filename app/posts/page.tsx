@@ -4,6 +4,6 @@ import {getMetadata} from "@/lib/utils";
 
 export const metadata = getMetadata({title: '게시판', asPath:'/posts'});
 
-export default function Home({ searchParams }: { searchParams: { page?: string } }) {
+export default function Home({ searchParams }: { searchParams: { page?: string, query?: string } }) {
     return <Posts searchParams={searchParams} />
 }

@@ -40,9 +40,9 @@ export async function getPostData(category: string, slug: string): Promise<PostD
     };
 }
 
-export async function getSortedPostsData(category?: string, page: number = 1, pageSize: number = 10): Promise<{ posts: PostData[], totalPages: number }> {
+export async function getSortedPostsData(category?: string, page: number = 1, pageSize: number = 10, query?: string): Promise<{ posts: PostData[], totalPages: number }> {
     const filePaths = getPostFiles(category);
-    const allPostsData = await Promise.all(filePaths.map(async (filePath) => {
+    let allPostsData = await Promise.all(filePaths.map(async (filePath) => {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const { content, frontmatter } = await compileMDX({
             source: fileContents,
@@ -76,6 +76,13 @@ export async function getSortedPostsData(category?: string, page: number = 1, pa
             thumbnail: frontmatter.thumbnail,
         } as PostData;
     }));
+
+    if (query) {
+        allPostsData = allPostsData.filter(post =>
+            post.title.toLowerCase().includes(query.toLowerCase()) ||
+            post.source.toLowerCase().includes(query.toLowerCase())
+        );
+    }
 
     const sortedPosts = allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
 

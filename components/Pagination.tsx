@@ -3,7 +3,8 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Pagination({ totalPages, currentPage }: { totalPages: number, currentPage: number }) {
     const pathname = usePathname();
@@ -18,40 +19,48 @@ export default function Pagination({ totalPages, currentPage }: { totalPages: nu
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     return (
-        <div className="flex justify-center items-center space-x-2 mt-8">
-            <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={currentPage <= 1}
-                asChild
+        <nav className="flex justify-center items-center space-x-2 mt-12" role="navigation" aria-label="Pagination">
+            <Link
+                href={createPageURL(currentPage - 1)}
+                className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    "h-10 w-10 p-0",
+                    currentPage <= 1 && "pointer-events-none opacity-50"
+                )}
+                aria-disabled={currentPage <= 1}
+                tabIndex={currentPage <= 1 ? -1 : undefined}
             >
-                <Link href={createPageURL(currentPage - 1)} aria-disabled={currentPage <= 1}>
-                    이전
-                </Link>
-            </Button>
+                <span className="sr-only">Previous Page</span>
+                <ChevronLeft className="h-5 w-5" />
+            </Link>
+
             {pageNumbers.map((page) => (
-                <Button
+                <Link
                     key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="icon"
-                    className="h-8 w-8"
-                    asChild
+                    href={createPageURL(page)}
+                    className={cn(
+                        buttonVariants({ variant: currentPage === page ? "default" : "outline" }),
+                        "h-10 w-10"
+                    )}
+                    aria-current={currentPage === page ? "page" : undefined}
                 >
-                    <Link href={createPageURL(page)}>{page}</Link>
-                </Button>
-            ))}
-            <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={currentPage >= totalPages}
-                asChild
-            >
-                <Link href={createPageURL(currentPage + 1)} aria-disabled={currentPage >= totalPages}>
-                    다음
+                    {page}
                 </Link>
-            </Button>
-        </div>
+            ))}
+
+            <Link
+                href={createPageURL(currentPage + 1)}
+                className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    "h-10 w-10 p-0",
+                    currentPage >= totalPages && "pointer-events-none opacity-50"
+                )}
+                aria-disabled={currentPage >= totalPages}
+                tabIndex={currentPage >= totalPages ? -1 : undefined}
+            >
+                <span className="sr-only">Next Page</span>
+                <ChevronRight className="h-5 w-5" />
+            </Link>
+        </nav>
     );
 }

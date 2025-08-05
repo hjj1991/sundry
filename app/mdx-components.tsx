@@ -20,6 +20,7 @@ const CaptionedImage: React.FC<CaptionedImageProps> = ({caption, width = 800, he
                 priority
                 className="block mx-auto max-w-full h-auto rounded-lg shadow-md"
                 {...props as ImageProps}
+                alt={props.alt || caption || ""}
             />
             {caption && (
                 <figcaption className="mt-2 text-sm text-muted-foreground">
