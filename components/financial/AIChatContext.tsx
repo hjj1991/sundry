@@ -82,7 +82,7 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
   }, [isLoading]);
 
   return (
-    <AIChatContext.Provider value={{ messages, isLoading, sendMessage, loadingMessage }}>
+    <AIChatContext.Provider value={{ messages, isLoading, isTyping, sendMessage, loadingMessage }}>
       {children}
     </AIChatContext.Provider>
   );
