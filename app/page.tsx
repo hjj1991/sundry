@@ -7,6 +7,7 @@ import Link from "next/link";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import HomeFinancials from "@/components/financial/HomeFinancials";
 
+
 const queryClient = new QueryClient();
 
 export const metadata = getMetadata({title: '홈'});
@@ -54,6 +55,6 @@ export default function Home() {
                     <LatestPosts/>
                 </div>
             </section>
-        </div>
+            </div>
     );
 }

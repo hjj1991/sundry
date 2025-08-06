@@ -58,3 +58,10 @@ export type GroupedOptions = {
         [reserveType: string]: FinancialProductOption[];
     };
 };
+
+export type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  createdAt: Date;
+};

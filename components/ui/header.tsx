@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import {Nav} from './nav';
-import {LayoutDashboard, Moon, StickyNote, Sun} from 'lucide-react';
+import {LayoutDashboard, MessageCircle, Moon, StickyNote, Sun} from 'lucide-react';
 import Link from 'next/link';
 import {useTheme} from 'next-themes';
 import {Button} from "@/components/ui/button";
@@ -24,6 +24,12 @@ export default function Sidebar() {
             title: "Posts",
             href: "/posts",
             icon: StickyNote,
+            variant: "default" as const,
+        },
+        {
+            title: "AI Chat",
+            href: "/ai-chat",
+            icon: MessageCircle,
             variant: "default" as const,
         },
     ];

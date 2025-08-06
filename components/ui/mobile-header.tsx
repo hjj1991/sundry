@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {useTheme} from 'next-themes';
 import {Button} from "@/components/ui/button";
 import {Nav} from "@/components/ui/nav";
-import {LayoutDashboard, StickyNote} from "lucide-react";
+import {LayoutDashboard, MessageCircle, StickyNote} from "lucide-react";
 
 export default function MobileHeader() {
     const {theme, setTheme} = useTheme();
@@ -29,6 +29,12 @@ export default function MobileHeader() {
             title: "Posts",
             href: "/posts",
             icon: StickyNote,
+            variant: "default" as const,
+        },
+        {
+            title: "AI Chat",
+            href: "/ai-chat",
+            icon: MessageCircle,
             variant: "default" as const,
         },
     ];

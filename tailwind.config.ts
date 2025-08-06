@@ -38,6 +38,7 @@ const config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -78,10 +79,33 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out forwards",
+      },
+      boxShadow: {
+        'custom-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'custom-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'custom-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'custom-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        'custom-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        'custom-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+        'custom-outline': '0 0 0 3px rgba(66, 153, 225, 0.5)',
+        'custom-neumorphic': '5px 5px 10px #bebebe, -5px -5px 10px #ffffff',
+        'custom-neumorphic-dark': '5px 5px 10px #1a1a1a, -5px -5px 10px #2a2a2a',
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
+        'xl': 'var(--shadow-xl)',
+        '2xl': 'var(--shadow-2xl)',
+        'inner': 'var(--shadow-inner)',
+        'none': 'var(--shadow-none)',
       },
     },
   },
@@ -91,7 +115,7 @@ const config = {
       scrollMargin: ['responsive'],
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config
 
 export default config
