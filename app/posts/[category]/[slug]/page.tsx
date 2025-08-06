@@ -34,13 +34,34 @@ export async function generateMetadata({params, searchParams}: Params, parent: R
     return getMetadata({title: title, description: description, ogImage: thumbnailPath, asPath: asPath});
 }
 
-export default async function Post({params}: Params) {
-    const {title, description, date, category, source} = await getPostData(params.category, params.slug);
+const PostContent = ({ source }: { source: string }) => {
     const components = useMDXComponents();
     const rehypeOptions = {
-        theme: 'one-dark-pro', // 다크 모드에 어울리는 테마로 변경
+        theme: 'one-dark-pro',
         keepBackground: true,
     };
+
+    return (
+        <MDXRemote
+            source={source}
+            components={components}
+            options={{
+                parseFrontmatter: true,
+                mdxOptions: {
+                    // @ts-ignore
+                    remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
+                    rehypePlugins: [
+                        [rehypeAutolinkHeadings, { behavior: 'append', properties: { className: 'toc-link' } }],
+                        [rehypePrettyCode, rehypeOptions]
+                    ]
+                }
+            }}
+        />
+    );
+};
+
+export default async function Post({params}: Params) {
+    const {title, description, date, category, source} = await getPostData(params.category, params.slug);
     const linkUrl = `/posts/${category}`;
     return (
         <div>
@@ -63,21 +84,7 @@ export default async function Post({params}: Params) {
             <hr className="border-t-2 border-dashed border-border my-8"/>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8">
                 <article className="prose dark:prose-invert max-w-none">
-                    <MDXRemote
-                        source={source}
-                        components={components}
-                        options={{
-                            parseFrontmatter: true,
-                            mdxOptions: {
-                                // @ts-ignore
-                                remarkPlugins: [remarkToc, remarkGfm, remarkSlug],
-                                rehypePlugins: [
-                                    [rehypeAutolinkHeadings, {behavior: 'append', properties: {className: 'toc-link'}}],
-                                    [rehypePrettyCode, rehypeOptions]
-                                ]
-                            }
-                        }}
-                    />
+                    <PostContent source={source} />
                 </article>
                 <aside className="hidden lg:block sticky top-24 h-fit">
                     <CustomTOC title="목차"/>
