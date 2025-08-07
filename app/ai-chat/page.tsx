@@ -28,7 +28,7 @@ export default function AIChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] flex-col">
+    <div className="flex min-h-[calc(100vh-14rem)] flex-col">
       <PageTitle
         title="AI 금융 어시스턴트"
         description="궁금한 금융 정보를 마음껏 물어보세요. AI가 친절하게 답변해드립니다."
@@ -50,7 +50,7 @@ export default function AIChatPage() {
           />
         )}
       </div>
-      <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
+      <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2 pb-safe mb-4">
         <Input
           placeholder="예: 아이를 위한 최고의 적금 상품은 뭐야?"
           value={input}
