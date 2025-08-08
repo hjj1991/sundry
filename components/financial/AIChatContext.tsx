@@ -52,21 +52,57 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`/api/ai-search?query=${encodeURIComponent(content)}`);
+      const url = `/api/ai-search?query=${encodeURIComponent(content)}`;
 
-      if (!response.ok) {
-        throw new Error('AI 응답을 가져오는데 실패했습니다.');
-      }
+      // 네이티브 EventSource로 스트림 수신 (fetch + reader 파싱 금지)
+      const es = new EventSource(url);
 
-      const data = await response.json();
+      const assistantMessageId = uuidv4();
+      let assistantContent = '';
 
-      const assistantMessage: ChatMessageType = {
-        id: uuidv4(),
-        role: 'assistant',
-        content: data.displayResponse || '죄송합니다. 답변을 생성하지 못했습니다.',
-        createdAt: new Date(),
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          createdAt: new Date(),
+        },
+      ]);
+
+      // 첫 메시지 유실 방지를 위해 즉시 핸들러 등록
+      es.onmessage = (e: MessageEvent) => {
+        // 서버가 [DONE]을 보낼 경우 종료 처리
+        if (e.data === '[DONE]') {
+          es.close();
+          setIsLoading(false);
+          setIsTyping(false);
+          return;
+        }
+        // 멀티라인 data는 \n로 합쳐진 상태로 도착
+        assistantContent += e.data;
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId ? { ...msg, content: assistantContent } : msg,
+          ),
+        );
       };
-      setMessages((prev) => [...prev, assistantMessage]);
+
+      es.onerror = (err: Event) => {
+        console.error('SSE error', err);
+        es.close();
+        setIsLoading(false);
+        setIsTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            role: 'assistant',
+            content: '스트리밍 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.',
+            createdAt: new Date(),
+          },
+        ]);
+      };
     } catch (error) {
       const errorMessage: ChatMessageType = {
         id: uuidv4(),
@@ -75,7 +111,6 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
         createdAt: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
       setIsTyping(false);
     }

@@ -1,42 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
+// app/api/ai-search/route.ts
+import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get('query');
+export async function GET(req: NextRequest) {
+    const query = new URL(req.url).searchParams.get('query');
+    if (!query) return new Response(JSON.stringify({ error: 'query required' }), { status: 400 });
 
-  if (!query) {
-    return NextResponse.json(
-      { error: 'Query parameter is required' },
-      { status: 400 },
+    const upstream = await fetch(
+        `${process.env.API_SERVER_HOST}/financial-products/search/stream?query=${encodeURIComponent(query)}`,
+        {
+            headers: { Accept: 'text/event-stream', 'Cache-Control': 'no-cache' },
+            cache: 'no-store',
+        }
     );
-  }
 
-  const externalApiUrl = `${process.env.API_SERVER_HOST}/financial-products/search?query=${encodeURIComponent(query)}`;
-
-  try {
-    const response = await fetch(externalApiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-cache',
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      return NextResponse.json(
-        { error: 'Failed to fetch data from external API', details: errorData },
-        { status: response.status },
-      );
+    if (!upstream.ok || !upstream.body) {
+        const details = await upstream.text().catch(() => '');
+        return new Response(JSON.stringify({ error: 'upstream error', details }), { status: upstream.status || 502 });
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
-    
-  } catch (error) {
-    console.error('Error fetching from external API:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
-  }
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    const reader = upstream.body.getReader();
+
+    (async () => {
+        await writer.write(new TextEncoder().encode(':proxy-connected\n\n'));
+        try {
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                if (value) await writer.write(value); // 그대로 relay
+            }
+        } finally {
+            await writer.close();
+            reader.releaseLock();
+        }
+    })();
+
+    return new Response(readable, {
+        headers: {
+            'Content-Type': 'text/event-stream; charset=utf-8',
+            'Cache-Control': 'no-cache, no-transform',
+            'X-Accel-Buffering': 'no',
+        },
+    });
 }
