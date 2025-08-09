@@ -1,8 +1,8 @@
+import { BlackHanSans, IBMPlexSansKR } from "@/lib/fonts";
 import type { Viewport } from "next";
 import "./globals.css";
 import { cn, getMetadata } from "@/lib/utils";
-import { GoogleAnalytics } from '@next/third-parties/google'
-import { BlackHanSans, NotoSansKR } from "@/lib/fonts";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import ClientProviders from "@/components/ClientProviders";
 
 export const metadata = getMetadata();
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="ko" className={`${NotoSansKR.variable} ${BlackHanSans.variable}`} suppressHydrationWarning>
+        <html lang="ko" className={`${IBMPlexSansKR.variable} ${BlackHanSans.variable}`} suppressHydrationWarning>
         <body
             className={cn(
                 "font-sans bg-background text-foreground",
