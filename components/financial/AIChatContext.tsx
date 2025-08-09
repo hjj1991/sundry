@@ -72,23 +72,39 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
 
       // 첫 메시지 유실 방지를 위해 즉시 핸들러 등록
       es.onmessage = (e: MessageEvent) => {
-        // 서버가 [DONE]을 보낼 경우 종료 처리
-        if (e.data === '[DONE]') {
+        if (e.data.startsWith('[DONE]')) {
           es.close();
           setIsLoading(false);
           setIsTyping(false);
           return;
         }
-        // 멀티라인 data는 \n로 합쳐진 상태로 도착
-        assistantContent += e.data;
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId ? { ...msg, content: assistantContent } : msg,
-          ),
-        );
+
+        try {
+          const parsedData = JSON.parse(e.data);
+          const textChunk = parsedData.content || '';
+          assistantContent += textChunk;
+
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: assistantContent }
+                : msg,
+            ),
+          );
+        } catch (error) {
+          console.error('Error parsing SSE data:', error, 'Raw data:', e.data);
+        }
       };
 
       es.onerror = (err: Event) => {
+        // 정상적인 스트림 종료 시 onerror가 발생할 수 있으므로 readyState로 실제 에러 구분
+        if (es.readyState === EventSource.CLOSED) {
+          console.log('SSE connection closed gracefully.');
+          setIsLoading(false);
+          setIsTyping(false);
+          return;
+        }
+
         console.error('SSE error', err);
         es.close();
         setIsLoading(false);

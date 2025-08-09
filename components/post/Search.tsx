@@ -22,7 +22,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
     };
 
     return (
-        <div className="relative flex-grow max-w-md w-full">
+        <div className="relative w-full md:w-72">
             <Input
                 className="w-full rounded-lg bg-background pl-10"
                 placeholder={placeholder}

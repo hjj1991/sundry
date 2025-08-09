@@ -35,7 +35,7 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
 
     return (
         <div className="w-full flex justify-start mb-8">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 w-full">
                 <label htmlFor="category-select" className="text-sm font-medium text-muted-foreground">카테고리</label>
                 <Select
                     value={selectCategory}
@@ -43,7 +43,7 @@ export default function CategorySelect({ selectedCategory, categories }: { selec
                     open={delayedOpen}
                     onOpenChange={handleOpenChange}
                 >
-                    <SelectTrigger id="category-select" className="w-[180px]">
+                    <SelectTrigger id="category-select" className="w-full md:w-[180px]">
                         <SelectValue placeholder="전체" />
                     </SelectTrigger>
                     <SelectContent className="mt-2">

@@ -6,6 +6,7 @@ import { Bot, User } from 'lucide-react';
 import { ChatMessage } from '@/types/financials';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 interface AIChatMessageProps {
   message: Pick<ChatMessage, 'role' | 'content'>;
@@ -65,12 +66,17 @@ export function AIChatMessage({ message, isLoading = false, isTyping = false }: 
         className={cn(
           'rounded-lg p-3 text-sm',
           isUser
-            ? 'bg-secondary text-secondary-foreground'
+            ? 'bg-primary text-primary-foreground'
             : 'bg-muted',
         )}
       >
-        <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:my-4 prose-p:my-2 prose-ul:my-2 prose-li:my-1">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <div
+          className={cn(
+            'prose prose-sm max-w-none dark:prose-invert prose-headings:my-4 prose-p:my-2 prose-ul:my-2 prose-li:my-1',
+            isUser && 'text-primary-foreground prose-p:text-primary-foreground prose-li:text-primary-foreground prose-strong:text-primary-foreground prose-blockquote:text-primary-foreground'
+          )}
+        >
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                 {content}
             </ReactMarkdown>
         </div>

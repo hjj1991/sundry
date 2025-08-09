@@ -33,16 +33,10 @@ export default function AIChatPage() {
         title="AI 금융 어시스턴트"
         description="궁금한 금융 정보를 마음껏 물어보세요. AI가 친절하게 답변해드립니다."
       />
-      <div ref={chatContainerRef} className="flex-1 space-y-4 overflow-y-auto rounded-md border p-4 my-4 shadow-md">
+      <div ref={chatContainerRef} className="flex-1 space-y-4 overflow-y-auto rounded-md bg-muted/50 p-6 my-4">
         {messages.map((msg) => (
           <AIChatMessage key={msg.id} message={msg} />
         ))}
-        {isLoading && (
-          <AIChatMessage
-            message={{ role: 'assistant', content: loadingMessage }}
-            isLoading={true}
-          />
-        )}
         {isTyping && !isLoading && (
           <AIChatMessage
             message={{ role: 'assistant', content: '' }}

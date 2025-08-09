@@ -14,7 +14,7 @@ export default async function Posts({ category, searchParams }: { category?: str
 
     return (
         <div className="flex flex-col items-center">
-            <div className="w-full flex justify-between items-center mb-8">
+            <div className="w-full flex flex-col md:flex-row md:justify-end items-center gap-4 mb-8">
                 <CategorySelect selectedCategory={category} categories={allCategories} />
                 <Search placeholder="Search posts..." />
             </div>

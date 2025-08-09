@@ -1,207 +1,169 @@
-import React, {useEffect, useRef} from 'react';
-import {FinancialProduct, FinancialProductOption, GroupedOptions} from "@/types/financials";
-import {Share2} from 'lucide-react'; // 아이콘 추가
+import React, { useEffect, useRef } from 'react';
+import { FinancialProduct } from '@/types/financials';
+import {
+  BadgeCheck,
+  Calendar,
+  ClipboardCopy,
+  Info,
+  Paperclip,
+  PiggyBank,
+  Sparkles,
+  UserCheck,
+  X,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    data: FinancialProduct;
+  isOpen: boolean;
+  onClose: () => void;
+  data: FinancialProduct;
 }
 
-export function FinancialProductModal({isOpen, onClose, data}: ModalProps) {
-    const modalRef = useRef<HTMLDivElement>(null);
+export function FinancialProductModal({ isOpen, onClose, data }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (!isOpen) return;
+  useEffect(() => {
+    if (!isOpen) return;
 
-        const handleClickOutside = (event: MouseEvent) => {
-            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                onClose();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, onClose]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        window.addEventListener('keydown', handleEscape);
-        return () => {
-            window.removeEventListener('keydown', handleEscape);
-        };
-    }, [isOpen, onClose]);
-
-    if (!isOpen || !data) return null;
-
-    const groupedOptions: GroupedOptions = groupOptionsByType(data.financialProductOptions);
-    const {financialCompany, postMaturityInterestRate, additionalNotes, specialCondition} = data;
-
-    // URL 복사 함수
-    const shareUrl = () => {
-        const url = window.location.href;
-        navigator.clipboard.writeText(url)
-            .then(() => {
-                alert('URL이 클립보드에 복사되었습니다!');
-            })
-            .catch(err => {
-                console.error('URL 복사 실패:', err);
-            });
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
-            <div
-                ref={modalRef}
-                className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-4xl w-full relative max-h-screen overflow-y-auto"
-                style={{maxHeight: '90vh'}}
-            >
-                <div className="absolute top-4 right-4 flex items-center space-x-2">
-                    {/* URL 복사 버튼 추가 */}
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
 
-                    <button
-                        onClick={shareUrl}
-                        className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-300"
-                        aria-label="Share URL"
-                    >
-                        <Share2 className="mr-2" size={20}/> {/* 아이콘 추가 */}
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
-                        aria-label="Close modal"
-                    >
-                        &times;
-                    </button>
-                </div>
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">{data.financialProductName}</h2>
-                <div className="space-y-4 mb-6">
-                    <p><strong className="text-gray-700 dark:text-gray-300">가입 방법:</strong> {data.joinWay}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">가입 제한:</strong> {data.joinRestriction}</p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">상품 유형:</strong> {data.financialProductType}
-                    </p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">가입 대상:</strong> {data.joinMember}</p>
-                </div>
+  if (!isOpen || !data) return null;
 
-                {/* 특별 조건 섹션 */}
-                <div className="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
-                    <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">특별 조건</h3>
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{specialCondition}</p>
-                </div>
+  const maxRate = Math.max(...data.financialProductOptions.map(o => o.maximumInterestRate || 0));
 
-                {/* 만기 후 이율 및 추가 사항 섹션 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
-                        <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">만기 후 이율</h3>
-                        <p className="text-gray-700 dark:text-gray-300">{postMaturityInterestRate}</p>
-                    </div>
+  const shareUrl = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url)
+      .then(() => alert('URL이 클립보드에 복사되었습니다!'))
+      .catch(err => console.error('URL 복사 실패:', err));
+  };
 
-                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
-                        <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">추가 사항</h3>
-                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{additionalNotes}</p>
-                    </div>
-                </div>
+  const DetailItem = ({ icon, label, children }: { icon: React.ReactNode, label: string, children: React.ReactNode }) => (
+    <div className="flex items-start space-x-4 py-3">
+      <div className="flex-shrink-0 text-muted-foreground">{icon}</div>
+      <div className="flex-1">
+        <p className="font-semibold text-foreground">{label}</p>
+        <div className="text-muted-foreground text-sm whitespace-pre-line">{children}</div>
+      </div>
+    </div>
+  );
 
-                {/* 회사 정보 섹션 */}
-                <div className="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
-                    <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">회사 정보</h3>
-                    <p><strong className="text-gray-700 dark:text-gray-300">회사명:</strong> {financialCompany.companyName}
-                    </p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">공시 월:</strong> {financialCompany.dclsMonth}
-                    </p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">담당자:</strong> {financialCompany.dclsChrgMan}
-                    </p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">홈페이지:</strong> <a
-                        href={financialCompany.hompUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-teal-500 hover:underline">{financialCompany.hompUrl}</a></p>
-                    <p><strong className="text-gray-700 dark:text-gray-300">전화번호:</strong> {financialCompany.calTel}</p>
-                    <p><strong
-                        className="text-gray-700 dark:text-gray-300">유형:</strong> {financialCompany.financialGroupType}
-                    </p>
-                </div>
-
-                {/* 이율 옵션 테이블 */}
-                <div className="mt-6">
-                    <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">이율 옵션</h3>
-                    <div className="overflow-x-auto">
-                        {Object.entries(groupedOptions).map(([interestRateType, reserveGroups]) => (
-                            <div key={interestRateType} className="mb-6">
-                                <h4 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">{interestRateType} 이율</h4>
-                                {Object.entries(reserveGroups).map(([reserveType, options]) => (
-                                    <div key={reserveType} className="mb-4">
-                                        <h5 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
-                                            {reserveType === 'null' ? '' : reserveType} 적립식
-                                        </h5>
-                                        <table
-                                            className="min-w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
-                                            <thead>
-                                            <tr className="bg-gray-200 dark:bg-gray-600">
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">개월수</th>
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">기본
-                                                    이율 (%)
-                                                </th>
-                                                <th className="py-3 px-4 border-b text-left text-gray-700 dark:text-gray-300">최대
-                                                    우대 이율 (%)
-                                                </th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {options.map((option, index) => (
-                                                <tr key={index}
-                                                    className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
-                                                    <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.depositPeriodMonths} 개월</td>
-                                                    <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.baseInterestRate?.toFixed(2)} %</td>
-                                                    <td className="py-2 px-4 border-b text-gray-900 dark:text-gray-100">{option.maximumInterestRate?.toFixed(2)} %</td>
-                                                </tr>
-                                            ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <button
-                    onClick={onClose}
-                    className="w-full bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition-colors duration-300"
-                >
-                    닫기
-                </button>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+      <div
+        ref={modalRef}
+        className="bg-background p-8 rounded-2xl shadow-2xl max-w-3xl w-full relative border max-h-[90vh] flex flex-col"
+      >
+        <div className="flex-shrink-0">
+          <div className="flex justify-between items-start">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <Badge variant="secondary">{data.financialProductType}</Badge>
+                <h2 className="text-3xl font-bold text-foreground">{data.financialProductName}</h2>
+              </div>
+              <p className="text-base text-muted-foreground">{data.financialCompany.companyName}</p>
             </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={shareUrl}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Share URL"
+              >
+                <ClipboardCopy size={20} />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close modal"
+              >
+                <X size={24} />
+              </button>
+            </div>
+          </div>
+
+          <div className="my-8 p-6 bg-muted/50 rounded-lg text-center">
+            <p className="text-sm text-muted-foreground">최고 연</p>
+            <p className={cn('text-6xl font-bold', maxRate > 5 ? 'text-primary' : 'text-foreground')}>
+              {maxRate.toFixed(2)}%
+            </p>
+          </div>
         </div>
-    )
-        ;
+
+        <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">상품 상세</TabsTrigger>
+              <TabsTrigger value="rates">금리 정보</TabsTrigger>
+            </TabsList>
+            <TabsContent value="details" className="mt-6">
+              <div className="divide-y">
+                <DetailItem icon={<Info size={20} />} label="가입 방법">
+                  {data.joinWay}
+                </DetailItem>
+                <DetailItem icon={<UserCheck size={20} />} label="가입 대상">
+                  {data.joinMember}
+                </DetailItem>
+                <DetailItem icon={<Sparkles size={20} />} label="우대 조건">
+                  {data.specialCondition}
+                </DetailItem>
+                <DetailItem icon={<Calendar size={20} />} label="만기 후 이자율">
+                  {data.postMaturityInterestRate}
+                </DetailItem>
+                <DetailItem icon={<Paperclip size={20} />} label="기타 유의사항">
+                  {data.additionalNotes}
+                </DetailItem>
+              </div>
+            </TabsContent>
+            <TabsContent value="rates" className="mt-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">저축 기간</TableHead>
+                    <TableHead className="text-center">기본 금리</TableHead>
+                    <TableHead className="text-center">최고 금리</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.financialProductOptions.map((option, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">{option.depositPeriodMonths}개월</TableCell>
+                      <TableCell className="text-center">{option.baseInterestRate?.toFixed(2)}%</TableCell>
+                      <TableCell className="text-center font-bold text-primary">
+                        {option.maximumInterestRate?.toFixed(2)}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-const groupOptionsByType = (options: FinancialProductOption[]): GroupedOptions => {
-    const groupedOptions: GroupedOptions = {};
-
-    options.forEach(option => {
-        const {interestRateType, reserveType} = option;
-
-        if (!groupedOptions[interestRateType]) {
-            groupedOptions[interestRateType] = {};
-        }
-
-        const key = reserveType || 'null'; // null 값을 'null'로 변환하여 키로 사용
-
-        if (!groupedOptions[interestRateType][key]) {
-            groupedOptions[interestRateType][key] = [];
-        }
-
-        groupedOptions[interestRateType][key].push(option);
-    });
-
-    return groupedOptions;
-};

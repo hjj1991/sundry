@@ -11,13 +11,12 @@ export function PostCard({postData}: { postData: PostData }) {
         <Card
             className={cn("group relative flex flex-col h-full bg-card text-card-foreground shadow-lg rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2")}>
             <Link href={`/posts/${postData.id}`} className="flex flex-col h-full">
-                <CardHeader className="relative h-48 w-full overflow-hidden p-0 bg-muted">
+                <CardHeader className="relative w-full overflow-hidden p-0 bg-muted aspect-video">
                     <Image
                         src={thumbnailPath}
                         alt={postData.title}
                         fill
-                        style={{objectFit: "contain"}}
-                        className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                         priority
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
