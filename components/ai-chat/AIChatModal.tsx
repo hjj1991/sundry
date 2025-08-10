@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Send, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { AIChatMessage } from '@/components/ai-chat/AIChatMessage';
 import { useAIChat } from '@/components/ai-chat/AIChatContext';
 
@@ -21,7 +22,7 @@ interface AIChatModalProps {
 }
 
 export function AIChatModal({ isOpen, onOpenChange }: AIChatModalProps) {
-  const { messages, isLoading, sendMessage, loadingMessage, isTyping } = useAIChat();
+  const { messages, sendMessage, isLoading, isTyping } = useAIChat();
   const [input, setInput] = useState('');
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -61,16 +62,9 @@ export function AIChatModal({ isOpen, onOpenChange }: AIChatModalProps) {
             {messages.map((msg) => (
               <AIChatMessage key={msg.id} message={msg} />
             ))}
-            {isLoading && (
+            {isTyping && (
               <AIChatMessage
-                message={{ role: 'assistant', content: loadingMessage }}
-                isLoading={true}
-              />
-            )}
-            {isTyping && !isLoading && (
-              <AIChatMessage
-                message={{ role: 'assistant', content: '' }}
-                isTyping={true}
+                message={{ role: 'assistant', content: '', id: uuidv4(), createdAt: new Date(), isTyping: true }}
               />
             )}
           </div>

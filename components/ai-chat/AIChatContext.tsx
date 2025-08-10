@@ -7,6 +7,8 @@ import { ChatMessage as ChatMessageType } from '@/types/financials';
 interface AIChatContextType {
   messages: ChatMessageType[];
   sendMessage: (content: string) => void;
+  isLoading: boolean;
+  isTyping: boolean;
 }
 
 const AIChatContext = createContext<AIChatContextType | undefined>(undefined);
@@ -125,8 +127,11 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const isLoading = messages.some((msg) => msg.isLoading);
+  const isTyping = messages.some((msg) => msg.isTyping);
+
   return (
-    <AIChatContext.Provider value={{ messages, sendMessage }}>
+    <AIChatContext.Provider value={{ messages, sendMessage, isLoading, isTyping }}>
       {children}
     </AIChatContext.Provider>
   );
