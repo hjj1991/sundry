@@ -81,7 +81,7 @@ export function AIChatMessage({ message }: AIChatMessageProps) {
       </div>
       {isUser && (
         <Avatar className="h-8 w-8 border">
-          <AvatarImage src="https://picsum.photos/seed/sundry-user/40/40" alt="User avatar" />
+          <AvatarImage src="/common/profile.jpeg" alt="User avatar" />
           <AvatarFallback>
             <User />
           </AvatarFallback>
