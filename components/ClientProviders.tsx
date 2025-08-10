@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import MobileHeader from '@/components/ui/mobile-header';
 import Sidebar from '@/components/ui/header';
-import Providers from '@/app/utils/providers';
+import Providers from '@/components/providers';
 import Footer from '@/components/ui/footer';
 import ScrollToTopAndShareButton from '@/components/ScrollToTopAndShareButton';
-import { AIChatProvider } from '@/components/financial/AIChatContext';
+import { AIChatProvider } from '@/components/ai-chat/AIChatContext';
 
-import { AIChatModal } from '@/components/financial/AIChatModal';
+import { AIChatModal } from '@/components/ai-chat/AIChatModal';
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);

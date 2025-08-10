@@ -12,8 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Send, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { AIChatMessage } from '@/components/financial/AIChatMessage';
-import { useAIChat } from '@/components/financial/AIChatContext';
+import { AIChatMessage } from '@/components/ai-chat/AIChatMessage';
+import { useAIChat } from '@/components/ai-chat/AIChatContext';
 
 interface AIChatModalProps {
   isOpen: boolean;

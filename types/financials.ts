@@ -64,4 +64,6 @@ export type ChatMessage = {
   role: 'user' | 'assistant' | 'system';
   content: string;
   createdAt: Date;
+  isLoading?: boolean;
+  isTyping?: boolean;
 };

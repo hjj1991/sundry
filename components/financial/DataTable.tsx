@@ -3,7 +3,7 @@
 import { FinancialProduct, FinancialProductResponse, SearchParams } from "@/types/financials";
 import { Key, useCallback, useEffect, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { FinancialProductModal } from "@/components/financial/FinancialProductModal";
+import { FinancialProductDetails } from "@/components/financial/FinancialProductDetails";
 import FinancialProductCard from "@/components/financial/FinancialProductCard";
 import {usePathname, useRouter} from "next/navigation";
 
@@ -149,7 +149,10 @@ export function DataTable({ searchParams }: { searchParams: SearchParams }) {
         const params = new URLSearchParams(searchParams);
         params.delete('financialProductId');
         setIsModalOpen(false);
-        replace(`${pathname}?${params.toString()}`, { scroll: false });
+        // Allow dialog closing animation to finish before updating URL and causing a re-render
+        setTimeout(() => {
+            replace(`${pathname}?${params.toString()}`, { scroll: false });
+        }, 100);
     };
 
     if (isLoading) {
@@ -186,7 +189,7 @@ export function DataTable({ searchParams }: { searchParams: SearchParams }) {
             )}
 
             {selectedProduct && (
-                <FinancialProductModal
+                <FinancialProductDetails
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     data={selectedProduct}

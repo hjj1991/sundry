@@ -2,20 +2,18 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { Bot, User } from 'lucide-react';
+import { Bot, User, Loader } from 'lucide-react';
 import { ChatMessage } from '@/types/financials';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 
 interface AIChatMessageProps {
-  message: Pick<ChatMessage, 'role' | 'content'>;
-  isLoading?: boolean;
-  isTyping?: boolean;
+  message: ChatMessage;
 }
 
-export function AIChatMessage({ message, isLoading = false, isTyping = false }: AIChatMessageProps) {
-  const { role, content } = message;
+export function AIChatMessage({ message }: AIChatMessageProps) {
+  const { role, content, isLoading, isTyping } = message;
   const isUser = role === 'user';
 
   if (isTyping) {
@@ -45,9 +43,9 @@ export function AIChatMessage({ message, isLoading = false, isTyping = false }: 
             <Bot />
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-3/4 animate-pulse rounded-md bg-gray-200" />
-          <div className="h-4 w-1/2 animate-pulse rounded-md bg-gray-200" />
+        <div className="rounded-lg p-3 text-sm bg-muted flex items-center gap-2">
+            <Loader className="animate-spin h-4 w-4" />
+            <p className="text-muted-foreground">{content}</p>
         </div>
       </div>
     );
@@ -83,6 +81,7 @@ export function AIChatMessage({ message, isLoading = false, isTyping = false }: 
       </div>
       {isUser && (
         <Avatar className="h-8 w-8 border">
+          <AvatarImage src="https://picsum.photos/seed/sundry-user/40/40" alt="User avatar" />
           <AvatarFallback>
             <User />
           </AvatarFallback>

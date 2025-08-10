@@ -1,19 +1,22 @@
 'use client';
 
-import { useAIChat } from '@/components/financial/AIChatContext';
+import { useAIChat } from '@/components/ai-chat/AIChatContext';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send } from 'lucide-react';
 import PageTitle from '@/components/PageTitle';
-import { AIChatMessage } from '@/components/financial/AIChatMessage';
+import { AIChatMessage } from '@/components/ai-chat/AIChatMessage';
 
 
 export default function AIChatPage() {
-  const { messages, isLoading, sendMessage, loadingMessage, isTyping } = useAIChat();
+  const { messages, sendMessage } = useAIChat();
   const [input, setInput] = useState('');
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  const lastMessage = messages[messages.length - 1];
+  const isResponding = lastMessage?.role === 'assistant' && (lastMessage.isLoading || lastMessage.isTyping);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -23,6 +26,7 @@ export default function AIChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!input.trim()) return;
     await sendMessage(input);
     setInput('');
   };
@@ -37,22 +41,16 @@ export default function AIChatPage() {
         {messages.map((msg) => (
           <AIChatMessage key={msg.id} message={msg} />
         ))}
-        {isTyping && !isLoading && (
-          <AIChatMessage
-            message={{ role: 'assistant', content: '' }}
-            isTyping={true}
-          />
-        )}
       </div>
       <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2 pb-safe mb-4">
         <Input
           placeholder="예: 아이를 위한 최고의 적금 상품은 뭐야?"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={isLoading}
+          disabled={isResponding}
           className="flex-1"
         />
-        <Button type="submit" disabled={isLoading} aria-label="전송" className="bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button type="submit" disabled={isResponding} aria-label="전송" className="bg-primary text-primary-foreground hover:bg-primary/90">
           <Send className="h-4 w-4" />
         </Button>
       </form>
